@@ -1,0 +1,933 @@
+/* =============================================================
+   AnalogyPage.css
+   Full visual redesign — Relate brand, playful, open-canvas.
+   No SaaS dashboard. Breathing room everywhere.
+   All logic unchanged; only presentation.
+============================================================= */
+
+/* ── CSS CUSTOM PROPERTIES ──────────────────────────────── */
+:root {
+  --ap-bg:        #f8f1e5;
+  --ap-cream:     #fffaf2;
+  --ap-ink:       #071a38;
+  --ap-purple:    #5424c7;
+  --ap-yellow:    #ffb800;
+  --ap-teal:      #17aaa7;
+  --ap-coral:     #f27d6b;
+  --ap-muted:     #526477;
+  --ap-border:    rgba(7,26,56,0.10);
+  --ap-shadow:    5px 6px 0 rgba(7,26,56,0.09);
+  --ap-shadow-lg: 8px 10px 0 rgba(7,26,56,0.11);
+}
+
+/* ── ROOT & RESET ───────────────────────────────────────── */
+.ap-root {
+  position: relative;
+  min-height: 100vh;
+  background: var(--ap-bg);
+  color: var(--ap-ink);
+  overflow-x: hidden;
+  font-family: inherit;
+}
+
+/* ============================================================
+   LOADING STATE
+============================================================ */
+.ap-loading {
+  position: relative;
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--ap-bg);
+  overflow: hidden;
+}
+
+.ap-loading__blob {
+  position: absolute;
+  border-radius: 50%;
+  filter: blur(70px);
+  opacity: 0.45;
+  animation: apBlobDrift 6s ease-in-out infinite alternate;
+}
+.ap-loading__blob--1 {
+  width: 420px; height: 420px;
+  top: -80px; left: -100px;
+  background: #ffd84d;
+  animation-duration: 7s;
+}
+.ap-loading__blob--2 {
+  width: 360px; height: 360px;
+  bottom: -60px; right: -80px;
+  background: #b89cff;
+  animation-duration: 9s;
+  animation-delay: -3s;
+}
+
+.ap-loading__card {
+  position: relative;
+  z-index: 2;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 20px;
+  padding: 52px 64px;
+  background: var(--ap-cream);
+  border: 2px solid var(--ap-border);
+  border-radius: 28px;
+  box-shadow: var(--ap-shadow-lg);
+}
+
+.ap-loading__ring {
+  width: 48px; height: 48px;
+  border-radius: 50%;
+  border: 4px solid #ddd3c4;
+  border-top-color: var(--ap-purple);
+  animation: apSpin 0.9s linear infinite;
+}
+
+.ap-loading__label {
+  font-size: 12px;
+  font-weight: 900;
+  text-transform: uppercase;
+  letter-spacing: 0.2em;
+  color: var(--ap-muted);
+}
+
+/* ============================================================
+   AMBIENT BACKGROUND
+   Blobs + floating geometry — all pointer-events:none
+============================================================ */
+.ap-bg {
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  overflow: hidden;
+}
+
+/* BLOBS */
+.ap-bg__blob {
+  position: absolute;
+  border-radius: 50%;
+  filter: blur(80px);
+}
+.ap-bg__blob--yellow {
+  width: 640px; height: 640px;
+  top: -120px; left: -140px;
+  background: radial-gradient(circle, #ffd84d 0%, transparent 70%);
+  opacity: 0.52;
+  animation: apBlobDrift 10s ease-in-out infinite alternate;
+}
+.ap-bg__blob--purple {
+  width: 560px; height: 560px;
+  top: 30%; right: -140px;
+  background: radial-gradient(circle, #9b7fe8 0%, transparent 70%);
+  opacity: 0.40;
+  animation: apBlobDrift 13s ease-in-out infinite alternate-reverse;
+}
+.ap-bg__blob--teal {
+  width: 480px; height: 480px;
+  bottom: -80px; left: 20%;
+  background: radial-gradient(circle, #17aaa7 0%, transparent 70%);
+  opacity: 0.32;
+  animation: apBlobDrift 11s ease-in-out infinite alternate;
+  animation-delay: -4s;
+}
+.ap-bg__blob--pink {
+  width: 320px; height: 320px;
+  bottom: 10%; right: 10%;
+  background: radial-gradient(circle, #f27d6b 0%, transparent 70%);
+  opacity: 0.28;
+  animation: apBlobDrift 14s ease-in-out infinite alternate-reverse;
+  animation-delay: -6s;
+}
+
+/* DECORATIVE RINGS */
+.ap-bg__ring {
+  position: absolute;
+  border-radius: 50%;
+  border: 2.5px solid;
+  opacity: 0.50;
+  animation: apOrbit 20s linear infinite;
+}
+.ap-bg__ring--1 {
+  width: 320px; height: 320px;
+  top: 6%; left: 2%;
+  border-color: var(--ap-yellow);
+  animation-duration: 22s;
+}
+.ap-bg__ring--2 {
+  width: 220px; height: 220px;
+  top: 12%; left: 5%;
+  border-color: var(--ap-purple);
+  opacity: 0.42;
+  animation-duration: 28s;
+  animation-direction: reverse;
+}
+.ap-bg__ring--3 {
+  width: 160px; height: 160px;
+  bottom: 18%; right: 5%;
+  border-color: var(--ap-teal);
+  opacity: 0.48;
+  animation-duration: 18s;
+}
+
+/* FLOATING DOTS */
+.ap-bg__dot {
+  position: absolute;
+  border-radius: 50%;
+  animation: apFloat 5s ease-in-out infinite alternate;
+}
+.ap-bg__dot--1 { width:18px;height:18px; top:8%;  left:12%; background:#ffb800; opacity:0.85; animation-duration:5.2s; }
+.ap-bg__dot--2 { width:14px;height:14px; top:22%; right:8%;  background:#9b7fe8; opacity:0.75; animation-duration:6.8s; animation-delay:-2s; }
+.ap-bg__dot--3 { width:12px;height:12px; top:55%; left:3%;  background:#17aaa7; opacity:0.80; animation-duration:4.5s; animation-delay:-1s; }
+.ap-bg__dot--4 { width:16px;height:16px; bottom:20%; right:15%; background:#f27d6b; opacity:0.70; animation-duration:7.1s; animation-delay:-3s; }
+.ap-bg__dot--5 { width:10px;height:10px; bottom:35%; left:25%; background:#ffb800; opacity:0.75; animation-duration:5.9s; animation-delay:-4s; }
+
+/* FLOATING CROSS / SPARKLE TEXT */
+.ap-bg__cross {
+  position: absolute;
+  font-size: 22px;
+  font-weight: 900;
+  animation: apFloat 6s ease-in-out infinite alternate;
+  opacity: 0.55;
+}
+.ap-bg__cross--1 { top:15%; right:22%; color: var(--ap-purple); animation-duration:6.3s; }
+.ap-bg__cross--2 { bottom:28%; left:8%;  color: var(--ap-yellow); font-size:14px; animation-duration:8s; animation-delay:-3s; }
+.ap-bg__cross--3 { top:42%; right:5%;  color: var(--ap-teal); font-size:22px; animation-duration:7s; animation-delay:-1s; }
+
+/* ============================================================
+   MAIN CONTENT
+============================================================ */
+.ap-main {
+  position: relative;
+  z-index: 1;
+  max-width: 1600px;
+  margin: 0 auto;
+  padding: 40px 28px 80px;
+}
+
+@media (min-width: 1024px) { .ap-main { padding: 48px 56px 100px; } }
+@media (min-width: 1280px) { .ap-main { padding: 56px 80px 120px; } }
+
+/* ============================================================
+   HERO STRIP
+   Open, no box — just typography + pill floating on the canvas
+============================================================ */
+.ap-hero {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 24px;
+  margin-bottom: 22px;
+  flex-wrap: wrap;
+}
+
+.ap-hero__left { flex: 1; min-width: 0; }
+
+.ap-hero__badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 16px;
+  padding: 5px 14px;
+  border-radius: 100px;
+  background: rgba(7,26,56,0.06);
+  border: 1.5px solid var(--ap-border);
+  font-size: 10px;
+  font-weight: 900;
+  text-transform: uppercase;
+  letter-spacing: 0.2em;
+  color: var(--ap-muted);
+}
+.ap-hero__badge-dot {
+  width: 7px; height: 7px;
+  border-radius: 50%;
+  background: var(--ap-coral);
+  animation: apPulse 2s ease-in-out infinite;
+}
+
+.ap-hero__title {
+  font-size: clamp(2.2rem, 5vw, 4.5rem);
+  font-weight: 900;
+  line-height: 0.82;
+  letter-spacing: -0.05em;
+  text-transform: uppercase;
+  color: var(--ap-ink);
+  margin-bottom: 12px;
+}
+
+.ap-hero__concept {
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--ap-muted);
+  margin-top: 8px;
+  max-width: 480px;
+  line-height: 1.5;
+}
+
+.ap-hero__right {
+  position: relative;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding-top: 8px;
+}
+
+.ap-hero__world-pill {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 22px;
+  border-radius: 100px;
+  background: var(--ap-ink);
+  color: #fff;
+  font-size: 12px;
+  font-weight: 900;
+  text-transform: uppercase;
+  letter-spacing: 0.14em;
+  box-shadow: 4px 4px 0 var(--ap-yellow);
+  position: relative;
+  z-index: 2;
+}
+.ap-hero__world-icon {
+  font-size: 16px;
+  opacity: 0.7;
+}
+
+/* Orbit rings around world pill */
+.ap-hero__orbit { position: absolute; inset: -20px; pointer-events: none; }
+.ap-hero__orbit-ring {
+  position: absolute;
+  border-radius: 50%;
+  border: 1.5px solid;
+  inset: 0;
+  opacity: 0;
+  animation: apRingPulse 3s ease-out infinite;
+}
+.ap-hero__orbit-ring--1 { border-color: var(--ap-yellow); animation-delay: 0s; }
+.ap-hero__orbit-ring--2 { border-color: var(--ap-purple); animation-delay: 1.5s; }
+
+/* ============================================================
+   SAVE BANNER
+============================================================ */
+.ap-save-banner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 16px;
+  margin-bottom: 40px;
+  padding: 18px 28px;
+  border-radius: 20px;
+  background: linear-gradient(135deg, #eee8ff 0%, #dff8f6 100%);
+  border: 2px solid rgba(84, 36, 199, 0.18);
+  box-shadow: 4px 5px 0 rgba(84,36,199,0.12);
+}
+.ap-save-banner__inner {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+.ap-save-banner__icon {
+  width: 40px; height: 40px;
+  display: flex; align-items: center; justify-content: center;
+  border-radius: 12px;
+  background: var(--ap-purple);
+  color: #fff;
+  font-size: 16px;
+  box-shadow: 2px 3px 0 rgba(7,26,56,0.15);
+  flex-shrink: 0;
+}
+.ap-save-banner__text {
+  font-size: 14px;
+  font-weight: 700;
+  color: #342568;
+}
+.ap-save-banner__btn {
+  padding: 12px 28px;
+  border-radius: 14px;
+  border: 2px solid var(--ap-ink);
+  background: var(--ap-ink);
+  color: #fff;
+  font-size: 13px;
+  font-weight: 900;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  cursor: pointer;
+  box-shadow: 3px 4px 0 var(--ap-purple);
+  transition: transform 150ms ease, box-shadow 150ms ease, background 150ms ease;
+  white-space: nowrap;
+}
+.ap-save-banner__btn:hover:not(:disabled) {
+  transform: translateY(-2px);
+  background: var(--ap-purple);
+  box-shadow: 5px 6px 0 var(--ap-ink);
+}
+.ap-save-banner__btn:disabled { opacity: 0.55; cursor: not-allowed; }
+
+/* Error bar */
+.ap-error-bar {
+  display: flex; align-items: center; justify-content: space-between; gap: 12px;
+  margin-bottom: 28px;
+  padding: 14px 22px;
+  border-radius: 14px;
+  background: #fff0ed;
+  border: 2px solid #f27d6b;
+  font-size: 13px;
+  font-weight: 600;
+  color: #7a2f23;
+}
+.ap-error-bar__retry {
+  font-size: 12px; font-weight: 900;
+  padding: 5px 14px; border-radius: 8px;
+  background: #f27d6b; color: #fff; border: none; cursor: pointer;
+}
+
+/* ============================================================
+   MAIN CANVAS GRID
+   Left: explanation + limitations
+   Right: visual map + remix + cta
+============================================================ */
+.ap-canvas {
+  display: grid;
+  gap: 48px;
+  align-items: start;
+}
+@media (min-width: 1024px) {
+  .ap-canvas { grid-template-columns: 0.42fr 0.58fr; gap: 48px; }
+}
+
+/* ============================================================
+   LEFT COLUMN
+============================================================ */
+.ap-left {
+  display: flex;
+  flex-direction: column;
+  gap: 32px;
+}
+
+/* EXPLANATION */
+.ap-explanation {
+  position: relative;
+  padding: 36px 32px 32px;
+  border-radius: 28px;
+  background: linear-gradient(145deg, #f0eaff 0%, #e8f8f7 100%);
+  border: 2px solid rgba(84,36,199,0.20);
+  box-shadow: 6px 7px 0 rgba(84,36,199,0.15);
+  overflow: hidden;
+}
+
+/* Big decorative ring inside card — top-right */
+.ap-explanation__ring {
+  position: absolute;
+  top: -60px; right: -60px;
+  width: 200px; height: 200px;
+  border-radius: 50%;
+  border: 3px solid rgba(84,36,199,0.35);
+  pointer-events: none;
+}
+
+.ap-explanation__header {
+  display: flex;
+  align-items: flex-start;
+  gap: 14px;
+  margin-bottom: 24px;
+}
+.ap-explanation__icon {
+  font-size: 24px;
+  flex-shrink: 0;
+  margin-top: 2px;
+}
+.ap-explanation__eyebrow {
+  font-size: 10px;
+  font-weight: 900;
+  text-transform: uppercase;
+  letter-spacing: 0.2em;
+  color: var(--ap-muted);
+  margin-bottom: 3px;
+}
+.ap-explanation__subtitle {
+  font-size: 16px;
+  font-weight: 900;
+  color: var(--ap-ink);
+}
+.ap-explanation__body {
+  font-size: 15px;
+  line-height: 1.7;
+  color: #1e1545;
+}
+
+/* ── Override ExplanationPanel inner styles ────────────── */
+.ap-explanation__body .explanation-panel { all: unset; display: block; }
+.ap-explanation__body .explanation-panel h2 { display: none; }
+.ap-explanation__body .explanation-panel .explanation-content p {
+  font-size: 15px;
+  line-height: 1.75;
+  color: #2a3f55;
+  margin: 0;
+}
+.ap-explanation__body .explanation-panel.error-state .error-message p {
+  font-size: 13px;
+  color: var(--ap-coral);
+}
+
+/* LIMITATIONS — sticky note */
+.ap-limitations {
+  position: relative;
+  padding: 28px 26px 24px;
+  border-radius: 20px;
+  background: #fff3b0;
+  border: 2px solid rgba(180,130,0,0.30);
+  box-shadow: 5px 6px 0 rgba(180,130,0,0.20);
+  transform: rotate(0.8deg);
+  transition: transform 200ms ease;
+}
+.ap-limitations:hover { transform: rotate(0deg); }
+
+/* tape strip pseudo-element via child div */
+.ap-limitations__tape {
+  position: absolute;
+  top: -10px;
+  left: 28px;
+  width: 64px;
+  height: 20px;
+  background: rgba(255, 184, 0, 0.55);
+  border-radius: 4px;
+  transform: rotate(-2deg);
+}
+.ap-limitations__eyebrow {
+  font-size: 10px;
+  font-weight: 900;
+  text-transform: uppercase;
+  letter-spacing: 0.18em;
+  color: #7a6020;
+  margin-bottom: 14px;
+}
+.ap-limitations__body { font-size: 14px; line-height: 1.7; color: #4a3e1a; }
+
+/* Override LimitationsPanel inner styles */
+.ap-limitations__body .limitations-panel { all: unset; display: block; }
+.ap-limitations__body .limitations-list {
+  list-style: none;
+  padding: 0; margin: 0;
+  display: flex; flex-direction: column; gap: 10px;
+}
+.ap-limitations__body .limitation-item {
+  display: flex; align-items: flex-start; gap: 10px;
+  font-size: 14px; line-height: 1.6; color: #4a3e1a;
+}
+.ap-limitations__body .limitation-item::before {
+  content: "—";
+  flex-shrink: 0;
+  margin-top: 1px;
+  font-weight: 900;
+  color: #c9a020;
+}
+
+/* ============================================================
+   RIGHT COLUMN
+============================================================ */
+.ap-right {
+  display: flex;
+  flex-direction: column;
+  gap: 36px;
+}
+
+/* VISUAL MAP WRAPPER */
+.ap-visual-wrap {
+  position: relative;
+  border-radius: 32px;
+  background: var(--ap-cream);
+  border: 2px solid rgba(7,26,56,0.13);
+  border-top: 4px solid var(--ap-teal);
+  box-shadow: var(--ap-shadow-lg);
+  overflow: hidden;
+}
+
+/* Corner decoration blobs inside the visual card */
+.ap-visual-wrap__deco-tl,
+.ap-visual-wrap__deco-br {
+  position: absolute;
+  width: 140px; height: 140px;
+  border-radius: 50%;
+  pointer-events: none;
+  z-index: 0;
+  filter: blur(28px);
+  opacity: 0.45;
+}
+.ap-visual-wrap__deco-tl { top: -40px; left: -40px; background: var(--ap-yellow); }
+.ap-visual-wrap__deco-br { bottom: -40px; right: -40px; background: var(--ap-purple); }
+
+.ap-visual-header {
+  position: relative;
+  z-index: 2;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 22px 28px;
+  border-bottom: 2px solid var(--ap-border);
+  flex-wrap: wrap;
+}
+.ap-visual-header__label { display: flex; align-items: center; gap: 14px; }
+.ap-visual-header__spark {
+  width: 40px; height: 40px;
+  display: flex; align-items: center; justify-content: center;
+  border-radius: 12px;
+  background: var(--ap-purple);
+  color: #fff;
+  font-size: 16px;
+  transform: rotate(-4deg);
+  box-shadow: 2px 3px 0 rgba(7,26,56,0.18);
+  flex-shrink: 0;
+}
+.ap-visual-header__eyebrow {
+  font-size: 10px; font-weight: 900; text-transform: uppercase;
+  letter-spacing: 0.2em; color: var(--ap-muted); margin-bottom: 2px;
+}
+.ap-visual-header__sub {
+  font-size: 14px; font-weight: 700; color: var(--ap-ink);
+}
+.ap-visual-header__count {
+  display: flex; flex-direction: column; align-items: center;
+  padding: 8px 18px;
+  border-radius: 12px;
+  background: rgba(7,26,56,0.05);
+  border: 1.5px solid var(--ap-border);
+}
+.ap-visual-header__count-num {
+  font-size: 22px; font-weight: 900; line-height: 1; color: var(--ap-ink);
+}
+.ap-visual-header__count-label {
+  font-size: 9px; font-weight: 700; text-transform: uppercase;
+  letter-spacing: 0.14em; color: var(--ap-muted);
+}
+
+.ap-visual-canvas {
+  position: relative; z-index: 1;
+  min-height: 480px;
+  padding: 24px 20px;
+}
+@media (min-width: 768px) { .ap-visual-canvas { min-height: 580px; padding: 28px 24px; } }
+
+.ap-visual-footer {
+  position: relative; z-index: 2;
+  display: flex; align-items: center; gap: 10px; flex-wrap: wrap;
+  padding: 14px 28px;
+  border-top: 2px solid var(--ap-border);
+  background: rgba(248,241,229,0.6);
+  font-size: 10px; font-weight: 700;
+  text-transform: uppercase; letter-spacing: 0.12em; color: var(--ap-muted);
+}
+.ap-visual-footer__dot {
+  width: 7px; height: 7px; border-radius: 50%;
+  background: var(--ap-teal); flex-shrink: 0;
+}
+.ap-visual-footer__sep { opacity: 0.4; }
+
+/* REMIX PANEL */
+.ap-remix {
+  padding: 32px 28px;
+  border-radius: 24px;
+  background: linear-gradient(145deg, #e6fafa 0%, #f0eaff 100%);
+  border: 2px solid rgba(23,170,167,0.22);
+  box-shadow: 5px 6px 0 rgba(23,170,167,0.18);
+}
+.ap-remix__header {
+  display: flex; align-items: flex-start; justify-content: space-between; gap: 16px;
+  margin-bottom: 24px;
+}
+.ap-remix__eyebrow {
+  font-size: 10px; font-weight: 900; text-transform: uppercase;
+  letter-spacing: 0.2em; color: var(--ap-muted); margin-bottom: 4px;
+}
+.ap-remix__title { font-size: 18px; font-weight: 900; color: var(--ap-ink); }
+.ap-remix__icon { font-size: 28px; color: var(--ap-purple); opacity: 1.0; flex-shrink: 0; }
+
+.ap-remix__loading {
+  display: flex; align-items: center; gap: 10px;
+  margin-bottom: 16px;
+  font-size: 12px; font-weight: 700; color: var(--ap-muted);
+}
+.ap-remix__spinner {
+  width: 18px; height: 18px;
+  border-radius: 50%;
+  border: 3px solid #ddd;
+  border-top-color: var(--ap-purple);
+  animation: apSpin 0.8s linear infinite;
+  flex-shrink: 0;
+}
+
+/* PRACTICE CTA */
+.ap-practice-cta {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  padding: 28px 32px;
+  border-radius: 28px;
+  background: var(--ap-yellow);
+  border: 2px solid var(--ap-ink);
+  box-shadow: 6px 7px 0 var(--ap-ink);
+  cursor: pointer;
+  text-align: left;
+  transition: transform 180ms ease, box-shadow 180ms ease;
+  overflow: hidden;
+  position: relative;
+}
+.ap-practice-cta:hover {
+  transform: translateY(-3px);
+  box-shadow: 9px 11px 0 var(--ap-ink);
+}
+.ap-practice-cta:active { transform: translateY(1px); box-shadow: 3px 4px 0 var(--ap-ink); }
+
+.ap-practice-cta__text { position: relative; z-index: 1; }
+.ap-practice-cta__eyebrow {
+  font-size: 10px; font-weight: 900; text-transform: uppercase;
+  letter-spacing: 0.2em; color: rgba(7,26,56,0.55); margin-bottom: 6px;
+}
+.ap-practice-cta__heading {
+  font-size: 24px; font-weight: 900; text-transform: uppercase;
+  letter-spacing: -0.03em; color: var(--ap-ink); line-height: 1;
+  margin-bottom: 5px;
+}
+.ap-practice-cta__sub { font-size: 13px; font-weight: 500; color: rgba(7,26,56,0.6); }
+
+.ap-practice-cta__arrow {
+  position: relative; z-index: 1;
+  flex-shrink: 0;
+  width: 56px; height: 56px;
+  display: flex; align-items: center; justify-content: center;
+  border-radius: 50%;
+  border: 2px solid var(--ap-ink);
+  background: var(--ap-cream);
+  font-size: 22px;
+  font-weight: 900;
+  transition: transform 180ms ease;
+}
+.ap-practice-cta:hover .ap-practice-cta__arrow { transform: translateX(4px); }
+
+/* ============================================================
+   FOOTER DIVIDER
+============================================================ */
+.ap-footer-note {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  margin-top: 80px;
+  justify-content: center;
+}
+.ap-footer-note__line {
+  display: block;
+  width: 80px; height: 1.5px;
+  background: rgba(7,26,56,0.12);
+  border-radius: 4px;
+}
+.ap-footer-note__text {
+  font-size: 9px; font-weight: 900;
+  text-transform: uppercase; letter-spacing: 0.24em; color: #9b8fa8;
+  white-space: nowrap;
+}
+
+/* ============================================================
+   KEYFRAME ANIMATIONS
+============================================================ */
+@keyframes apBlobDrift {
+  0%   { transform: translate(0, 0) scale(1); }
+  50%  { transform: translate(30px, -20px) scale(1.06); }
+  100% { transform: translate(-20px, 30px) scale(0.96); }
+}
+@keyframes apFloat {
+  0%   { transform: translateY(0); }
+  100% { transform: translateY(-12px); }
+}
+@keyframes apOrbit {
+  0%   { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+@keyframes apSpin {
+  to { transform: rotate(360deg); }
+}
+@keyframes apPulse {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50%       { opacity: 0.5; transform: scale(0.75); }
+}
+@keyframes apRingPulse {
+  0%   { transform: scale(0.6); opacity: 0.5; }
+  80%  { transform: scale(2.2); opacity: 0; }
+  100% { transform: scale(2.2); opacity: 0; }
+}
+
+/* ============================================================
+   RESPONSIVE TWEAKS
+============================================================ */
+@media (max-width: 768px) {
+  .ap-hero { margin-bottom: 36px; }
+  .ap-hero__title { font-size: 2.1rem; }
+  .ap-hero__right { display: none; }
+  .ap-canvas { gap: 32px; }
+  .ap-explanation { padding: 28px 22px; }
+  .ap-limitations { transform: none; }
+  .ap-visual-header { padding: 16px 20px; }
+  .ap-visual-canvas { min-height: 360px; padding: 16px 14px; }
+  .ap-practice-cta { padding: 22px 24px; }
+  .ap-practice-cta__heading { font-size: 18px; }
+}
+
+@media (max-width: 480px) {
+  .ap-main { padding: 24px 16px 60px; }
+  .ap-hero__title { font-size: 1.8rem; }
+  .ap-save-banner { flex-direction: column; align-items: flex-start; }
+  .ap-save-banner__btn { width: 100%; text-align: center; }
+}
+
+/* ── Extra decorative additions ──────────────────────────── */
+
+/* Coloured top accent stripe on explanation */
+.ap-explanation::after {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0; height: 5px;
+  background: linear-gradient(90deg, var(--ap-purple), var(--ap-teal));
+  border-radius: 28px 28px 0 0;
+}
+
+/* Coloured left accent bar on limitations */
+.ap-limitations::after {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; bottom: 0; width: 5px;
+  background: linear-gradient(180deg, var(--ap-yellow), #e9a800);
+  border-radius: 20px 0 0 20px;
+}
+
+/* Hero title accent — underline on last word via span trick */
+.ap-hero__title-accent {
+  color: var(--ap-purple);
+}
+
+/* Stronger save banner gradient */
+.ap-save-banner {
+  background: linear-gradient(135deg, #eee8ff 0%, #c7f5f3 100%);
+}
+
+/* Add a small color band to visual-wrap footer */
+.ap-visual-footer {
+  background: linear-gradient(90deg, rgba(23,170,167,0.08), rgba(84,36,199,0.06));
+  border-top-color: rgba(23,170,167,0.25);
+}
+
+/* Node count badge — more colorful */
+.ap-visual-header__count {
+  background: linear-gradient(135deg, rgba(84,36,199,0.10), rgba(23,170,167,0.10));
+  border-color: rgba(84,36,199,0.25);
+}
+.ap-visual-header__count-num { color: var(--ap-purple); }
+
+/* Hero badge — teal fill */
+.ap-hero__badge {
+  background: linear-gradient(90deg, rgba(23,170,167,0.14), rgba(84,36,199,0.10));
+  border-color: rgba(23,170,167,0.30);
+  color: #0f6f6d;
+}
+
+/* Practice CTA decorative sweep */
+.ap-practice-cta::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(135deg, transparent 55%, rgba(255,184,0,0.35) 100%);
+  pointer-events: none;
+}
+
+
+/* ============================================================
+   NEW DECORATIVE ELEMENTS (added in color pass 2)
+============================================================ */
+
+/* 5th blob — green */
+.ap-bg__blob--green {
+  width: 400px; height: 400px;
+  top: 55%; left: -120px;
+  background: radial-gradient(circle, #42d9a0 0%, transparent 70%);
+  opacity: 0.22;
+  animation: apBlobDrift 12s ease-in-out infinite alternate;
+  animation-delay: -7s;
+}
+
+/* 4th ring */
+.ap-bg__ring--4 {
+  width: 440px; height: 440px;
+  top: 40%; left: 40%;
+  border-color: #f27d6b;
+  border-width: 2px;
+  opacity: 0.28;
+  animation-duration: 35s;
+  animation-direction: reverse;
+}
+
+/* 6th and 7th dots */
+.ap-bg__dot--6 { width:8px;  height:8px;  top:72%; right:28%; background:#5424c7; opacity:0.70; animation: apFloat 6.4s ease-in-out infinite alternate; animation-delay:-5s; }
+.ap-bg__dot--7 { width:11px; height:11px; top:38%; left:42%;  background:#42d9a0; opacity:0.65; animation: apFloat 5.1s ease-in-out infinite alternate; animation-delay:-2s; }
+
+/* 4th and 5th cross chars */
+.ap-bg__cross--4 { bottom:12%; left:18%; color:#f27d6b; font-size:16px; opacity:0.60; animation: apFloat 7.2s ease-in-out infinite alternate; animation-delay:-4s; }
+.ap-bg__cross--5 { top:62%; right:12%;  color:#17aaa7; font-size:20px; opacity:0.55; animation: apFloat 5.8s ease-in-out infinite alternate; animation-delay:-1s; }
+
+/* SVG decorative elements — fixed position on page */
+.ap-bg__svg {
+  position: absolute;
+  pointer-events: none;
+}
+.ap-bg__svg--tl {
+  top: 4%; left: 1%;
+  width: 220px; height: 220px;
+  animation: apOrbit 40s linear infinite;
+  opacity: 0.70;
+}
+.ap-bg__svg--br {
+  bottom: 4%; right: 2%;
+  width: 260px; height: 260px;
+  animation: apOrbit 50s linear infinite reverse;
+  opacity: 0.65;
+}
+.ap-bg__svg--mr {
+  top: 25%; right: 0%;
+  width: 50px; height: 260px;
+  opacity: 0.65;
+  animation: apFloat 7s ease-in-out infinite alternate;
+}
+.ap-bg__svg--tr {
+  top: 2%; right: 6%;
+  width: 180px; height: 180px;
+  opacity: 0.80;
+  animation: apFloat 9s ease-in-out infinite alternate;
+  animation-delay: -3s;
+}
+.ap-bg__svg--bl {
+  bottom: 6%; left: 0%;
+  width: 280px; height: 130px;
+  opacity: 0.55;
+  animation: apFloat 8s ease-in-out infinite alternate;
+  animation-delay: -5s;
+}
+
+/* SVG corners inside visual card */
+.ap-visual-wrap__svg-corner {
+  position: absolute;
+  pointer-events: none;
+  z-index: 1;
+  width: 100px; height: 100px;
+}
+.ap-visual-wrap__svg-corner--tl { top: 0; left: 0; }
+.ap-visual-wrap__svg-corner--br { bottom: 0; right: 0; transform: rotate(180deg); }
+
+/* Hide SVGs on small screens to avoid clutter */
+@media (max-width: 640px) {
+  .ap-bg__svg { display: none; }
+  .ap-bg__blob--green { display: none; }
+  .ap-bg__ring--4 { display: none; }
+}

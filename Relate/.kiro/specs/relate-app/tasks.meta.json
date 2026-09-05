@@ -1,0 +1,621 @@
+{
+  "pbtResults": {
+    "2.4 Write property tests for concept length validation and email/password validators": {
+      "status": "passed",
+      "lastRunTimestamp": 1787751467133
+    }
+  },
+  "executionHistory": {
+    "1.1 Initialise the `server/` package, install dependencies (`express`, `mongoose`, `dotenv`, `cookie-parser`, `cors`, `bcrypt`, `jsonwebtoken`, `express-rate-limit`, `nodemailer`), and create `server/src/config/env.js` that validates all required environment variables at startup and exports the config object; process exits with a descriptive error if any required variable is missing": [
+      {
+        "executionId": "f4d96797-c020-4a0d-a8f3-f6b038fb6263",
+        "chatSessionId": "sess_4e48a8d0-65ed-4fd2-a2cc-9f73efdcf387",
+        "timestamp": 1787749316807
+      },
+      {
+        "executionId": "f4d96797-c020-4a0d-a8f3-f6b038fb6263",
+        "chatSessionId": "sess_4e48a8d0-65ed-4fd2-a2cc-9f73efdcf387",
+        "timestamp": 1787749792614
+      }
+    ],
+    "1.2 Create `server/src/config/worlds.js` (Analogy_World_List array) and `server/src/config/practice.js` (PRACTICE_QUESTION_COUNT, timeouts, max retries); create the Express app entry point with `cookie-parser`, CORS (origin from `CLIENT_ORIGIN`), JSON body parsing, and MongoDB connection via `MONGODB_URI`": [
+      {
+        "executionId": "f4d96797-c020-4a0d-a8f3-f6b038fb6263",
+        "chatSessionId": "sess_4e48a8d0-65ed-4fd2-a2cc-9f73efdcf387",
+        "timestamp": 1787749322564
+      },
+      {
+        "executionId": "f4d96797-c020-4a0d-a8f3-f6b038fb6263",
+        "chatSessionId": "sess_4e48a8d0-65ed-4fd2-a2cc-9f73efdcf387",
+        "timestamp": 1787750100934
+      }
+    ],
+    "1.3 Create all five Mongoose models: `User.model.js`, `Analogy.model.js` (with `AnalogyNode`, `AnalogyMapping`, `AnalogyRelationship` subdocuments), `PracticeSession.model.js`, `GuestUsage.model.js`, `ResetToken.model.js` — including all indexes, TTL indexes, and pre-save hooks exactly as specified in the design": [
+      {
+        "executionId": "f4d96797-c020-4a0d-a8f3-f6b038fb6263",
+        "chatSessionId": "sess_4e48a8d0-65ed-4fd2-a2cc-9f73efdcf387",
+        "timestamp": 1787749323881
+      },
+      {
+        "executionId": "f4d96797-c020-4a0d-a8f3-f6b038fb6263",
+        "chatSessionId": "sess_4e48a8d0-65ed-4fd2-a2cc-9f73efdcf387",
+        "timestamp": 1787750106584
+      }
+    ],
+    "1. Server foundation and environment configuration": [
+      {
+        "executionId": "f4d96797-c020-4a0d-a8f3-f6b038fb6263",
+        "chatSessionId": "sess_4e48a8d0-65ed-4fd2-a2cc-9f73efdcf387",
+        "timestamp": 1787750106684
+      }
+    ],
+    "2.1 Create `server/src/middleware/validate.middleware.js` with per-endpoint schema validators; create a sanitizer that strips MongoDB operator injection (`$`, `.` in key positions) and HTML tags from `name`/`email` fields while preserving legitimate punctuation in `concept` text": [
+      {
+        "executionId": "017597db-29e5-4a74-9669-1f9b26235c1d",
+        "chatSessionId": "sess_8c288a14-17d2-4fb1-9e0f-6558c1e65a4d",
+        "timestamp": 1787750368955
+      },
+      {
+        "executionId": "017597db-29e5-4a74-9669-1f9b26235c1d",
+        "chatSessionId": "sess_8c288a14-17d2-4fb1-9e0f-6558c1e65a4d",
+        "timestamp": 1787750592708
+      }
+    ],
+    "2.2 Create `server/src/middleware/rateLimiter.js` using `express-rate-limit` with the six rate-limit configs from the design (analogy generation, practice questions, practice questions/more, practice evaluate, login, forgot-password); rate-limit exceeded response: `{ error: { code: \"RATE_LIMIT_EXCEEDED\", message: \"...\" } }`": [
+      {
+        "executionId": "017597db-29e5-4a74-9669-1f9b26235c1d",
+        "chatSessionId": "sess_8c288a14-17d2-4fb1-9e0f-6558c1e65a4d",
+        "timestamp": 1787750370136
+      },
+      {
+        "executionId": "017597db-29e5-4a74-9669-1f9b26235c1d",
+        "chatSessionId": "sess_8c288a14-17d2-4fb1-9e0f-6558c1e65a4d",
+        "timestamp": 1787750594645
+      }
+    ],
+    "2. Request validation, sanitization, and rate-limiting middleware": [
+      {
+        "executionId": "017597db-29e5-4a74-9669-1f9b26235c1d",
+        "chatSessionId": "sess_8c288a14-17d2-4fb1-9e0f-6558c1e65a4d",
+        "timestamp": 1787750594731
+      }
+    ],
+    "2.4 Write property tests for concept length validation and email/password validators": [
+      {
+        "executionId": "2a3b61ca-af9d-485a-9b80-33556fa7fd47",
+        "chatSessionId": "sess_3a05d9c8-7275-4a0d-abef-2a1940d96642",
+        "timestamp": 1787750632818
+      },
+      {
+        "executionId": "2a3b61ca-af9d-485a-9b80-33556fa7fd47",
+        "chatSessionId": "sess_3a05d9c8-7275-4a0d-abef-2a1940d96642",
+        "timestamp": 1787751484176
+      }
+    ],
+    "3.1 Create `server/src/services/ai/providers/index.js` (resolves provider from `LLM_PROVIDER` env), `server/src/services/ai/providers/oxalpha.provider.js` (implements `call(prompt, timeoutMs)` returning raw string), and `server/src/services/ai/aiService.js` facade with retry/timeout logic as specified in the design (3 total attempts, per-operation timeouts); raw provider errors are caught and sanitized — never forwarded to frontend": [
+      {
+        "executionId": "23a9dadd-6c1e-4f6a-8f2b-b61a38d334b3",
+        "chatSessionId": "sess_772ceb46-c1a2-428f-b532-97236fd05405",
+        "timestamp": 1787751590607
+      },
+      {
+        "executionId": "be3a59c9-4f8d-44c2-8acc-12762186105d",
+        "chatSessionId": "sess_d2877721-5677-437e-b0f0-29ec111f8033",
+        "timestamp": 1787753001394
+      },
+      {
+        "executionId": "be3a59c9-4f8d-44c2-8acc-12762186105d",
+        "chatSessionId": "sess_d2877721-5677-437e-b0f0-29ec111f8033",
+        "timestamp": 1787753209723
+      }
+    ],
+    "3.2 Create all nine prompt template files under `server/src/services/ai/prompts/` (`generate`, `simplify`, `expand`, `regenerate`, `switchWorld`, `practiceQuestions`, `practiceEvaluate`, `generateMoreQuestions`, `meaningfulness`) with the exact template strings from the design document": [
+      {
+        "executionId": "23a9dadd-6c1e-4f6a-8f2b-b61a38d334b3",
+        "chatSessionId": "sess_772ceb46-c1a2-428f-b532-97236fd05405",
+        "timestamp": 1787751596313
+      },
+      {
+        "executionId": "676e2194-9b11-4e04-8449-2d956bf63f60",
+        "chatSessionId": "sess_d9062b27-a81a-429d-b572-97607a3d0282",
+        "timestamp": 1787753958997
+      },
+      {
+        "executionId": "676e2194-9b11-4e04-8449-2d956bf63f60",
+        "chatSessionId": "sess_d9062b27-a81a-429d-b572-97607a3d0282",
+        "timestamp": 1787753964712
+      }
+    ],
+    "3.3 Create `server/src/services/ai/validators/aiResponse.validator.js`, `practiceQuestions.validator.js`, and `practiceEvaluation.validator.js` with the exact validation logic from the design; create `server/src/services/ai/meaningfulnessValidator.js` as an isolated module": [
+      {
+        "executionId": "23a9dadd-6c1e-4f6a-8f2b-b61a38d334b3",
+        "chatSessionId": "sess_772ceb46-c1a2-428f-b532-97236fd05405",
+        "timestamp": 1787751598167
+      },
+      {
+        "executionId": "676e2194-9b11-4e04-8449-2d956bf63f60",
+        "chatSessionId": "sess_d9062b27-a81a-429d-b572-97607a3d0282",
+        "timestamp": 1787753969349
+      },
+      {
+        "executionId": "676e2194-9b11-4e04-8449-2d956bf63f60",
+        "chatSessionId": "sess_d9062b27-a81a-429d-b572-97607a3d0282",
+        "timestamp": 1787753974391
+      }
+    ],
+    "3.4 Write unit tests for all three AI validators and the meaningfulness validator; write unit tests for `aiService.js` retry logic (mock provider fails twice, succeeds on third → returns result; all three fail → 503); write unit tests for each prompt template (template substitution produces expected strings)": [
+      {
+        "executionId": "676e2194-9b11-4e04-8449-2d956bf63f60",
+        "chatSessionId": "sess_d9062b27-a81a-429d-b572-97607a3d0282",
+        "timestamp": 1787753979884
+      }
+    ],
+    "4.1 Create `server/src/services/token.service.js` (`crypto.randomBytes(32)` generation, SHA-256 hashing); create `server/src/middleware/auth.middleware.js` (`requireAuth`: reads `token` cookie, verifies JWT, sets `req.user = { userId, email }` from JWT claims only — never from request body)": [
+      {
+        "executionId": "01440349-0330-44a9-9f9e-eb368c980a0e",
+        "chatSessionId": "sess_4d2e1ab2-92d6-45b7-b7a0-2caeb33dd2a2",
+        "timestamp": 1787756827369
+      },
+      {
+        "executionId": "01440349-0330-44a9-9f9e-eb368c980a0e",
+        "chatSessionId": "sess_4d2e1ab2-92d6-45b7-b7a0-2caeb33dd2a2",
+        "timestamp": 1787756928745
+      }
+    ],
+    "4.2 Create `server/src/routes/auth.routes.js` and `server/src/controllers/auth.controller.js` implementing all six auth endpoints: `POST /register`, `POST /login`, `POST /logout`, `GET /me`, `POST /forgot-password`, `POST /reset-password`": [
+      {
+        "executionId": "01440349-0330-44a9-9f9e-eb368c980a0e",
+        "chatSessionId": "sess_4d2e1ab2-92d6-45b7-b7a0-2caeb33dd2a2",
+        "timestamp": 1787756946444
+      },
+      {
+        "executionId": "01440349-0330-44a9-9f9e-eb368c980a0e",
+        "chatSessionId": "sess_4d2e1ab2-92d6-45b7-b7a0-2caeb33dd2a2",
+        "timestamp": 1787759042147
+      }
+    ],
+    "4.5 Write integration tests for all six auth endpoints using Supertest + MongoDB Memory Server": [
+      {
+        "executionId": "01440349-0330-44a9-9f9e-eb368c980a0e",
+        "chatSessionId": "sess_4d2e1ab2-92d6-45b7-b7a0-2caeb33dd2a2",
+        "timestamp": 1787759043306
+      },
+      {
+        "executionId": "01440349-0330-44a9-9f9e-eb368c980a0e",
+        "chatSessionId": "sess_4d2e1ab2-92d6-45b7-b7a0-2caeb33dd2a2",
+        "timestamp": 1787759531226
+      }
+    ],
+    "4. Auth routes, controllers, and token service": [
+      {
+        "executionId": "01440349-0330-44a9-9f9e-eb368c980a0e",
+        "chatSessionId": "sess_4d2e1ab2-92d6-45b7-b7a0-2caeb33dd2a2",
+        "timestamp": 1787759531370
+      }
+    ],
+    "5. Checkpoint — auth layer complete": [
+      {
+        "executionId": "7d95be9b-1c75-48c0-8738-31d535253335",
+        "chatSessionId": "sess_724102e9-20b6-447a-aeae-601c43d77948",
+        "timestamp": 1787824443637
+      },
+      {
+        "executionId": "7d95be9b-1c75-48c0-8738-31d535253335",
+        "chatSessionId": "sess_724102e9-20b6-447a-aeae-601c43d77948",
+        "timestamp": 1787824564072
+      }
+    ],
+    "6.1 Create `server/src/routes/worlds.routes.js` returning `{ worlds: string[] }` from `config/worlds.js`; create guest-ID middleware that reads `guestId` cookie — if absent, generates a UUID and sets `Set-Cookie: guestId=<uuid>; HttpOnly; SameSite=Strict; Max-Age=<guestCookieMaxAgeMs>` — applied globally before all routes": [
+      {
+        "executionId": "2f75a548-9cfa-41d7-959b-f45011a9c18b",
+        "chatSessionId": "sess_21aa94fb-9a12-42a0-bbb2-c679b41d3957",
+        "timestamp": 1787824607434
+      },
+      {
+        "executionId": "2f75a548-9cfa-41d7-959b-f45011a9c18b",
+        "chatSessionId": "sess_21aa94fb-9a12-42a0-bbb2-c679b41d3957",
+        "timestamp": 1787824944261
+      }
+    ],
+    "6. Worlds endpoint and guest middleware": [
+      {
+        "executionId": "2f75a548-9cfa-41d7-959b-f45011a9c18b",
+        "chatSessionId": "sess_21aa94fb-9a12-42a0-bbb2-c679b41d3957",
+        "timestamp": 1787824944354
+      }
+    ],
+    "6.2 Write integration tests for `GET /api/worlds` (returns worlds array, no auth required); write unit test for guest-ID middleware (absent cookie → sets cookie; present cookie → uses existing value)": [
+      {
+        "executionId": "22a5b2c1-f78e-4eb0-8d93-1f458df994fa",
+        "chatSessionId": "sess_9eb98799-66ac-4f47-a637-19c1c2b94edb",
+        "timestamp": 1787824991136
+      },
+      {
+        "executionId": "22a5b2c1-f78e-4eb0-8d93-1f458df994fa",
+        "chatSessionId": "sess_9eb98799-66ac-4f47-a637-19c1c2b94edb",
+        "timestamp": 1787825118499
+      }
+    ],
+    "7.1 Create `server/src/routes/analogy.routes.js` and `server/src/controllers/analogy.controller.js` implementing `POST /api/analogies/generate` with the following exact flow:": [
+      {
+        "executionId": "ddb7379c-53f8-48c3-801f-ed419fb5a7b0",
+        "chatSessionId": "sess_af8c391c-1e15-413b-b872-ad822769682b",
+        "timestamp": 1787825210588
+      },
+      {
+        "executionId": "ddb7379c-53f8-48c3-801f-ed419fb5a7b0",
+        "chatSessionId": "sess_af8c391c-1e15-413b-b872-ad822769682b",
+        "timestamp": 1787825675741
+      }
+    ],
+    "7.2 Implement the remaining analogy CRUD endpoints in `analogy.controller.js`: `POST /api/analogies` (save, auth required, returns `201 { analogy: { id, analogyTitle, concept, analogyWorld, createdAt } }`), `GET /api/analogies/:id` (auth + ownership; after retrieving from DB, re-run `validateAIResponse` on the deserialized document before returning — if validation fails return `500 INTERNAL_ERROR`), `PUT /api/analogies/:id` (auth + ownership, overwrites), `DELETE /api/analogies/:id` (auth + ownership), `POST /api/analogies/:id/modify` (auth + ownership; passes `modificationType`, `currentNodeCount`, `previousNodeLabels` to AI_Service)": [
+      {
+        "executionId": "ddb7379c-53f8-48c3-801f-ed419fb5a7b0",
+        "chatSessionId": "sess_af8c391c-1e15-413b-b872-ad822769682b",
+        "timestamp": 1787825218447
+      },
+      {
+        "executionId": "ddb7379c-53f8-48c3-801f-ed419fb5a7b0",
+        "chatSessionId": "sess_af8c391c-1e15-413b-b872-ad822769682b",
+        "timestamp": 1787825986540
+      }
+    ],
+    "7.5 Write integration tests for analogy endpoints using Supertest + MongoDB Memory Server": [
+      {
+        "executionId": "ddb7379c-53f8-48c3-801f-ed419fb5a7b0",
+        "chatSessionId": "sess_af8c391c-1e15-413b-b872-ad822769682b",
+        "timestamp": 1787825223715
+      },
+      {
+        "executionId": "ddb7379c-53f8-48c3-801f-ed419fb5a7b0",
+        "chatSessionId": "sess_af8c391c-1e15-413b-b872-ad822769682b",
+        "timestamp": 1787825991998
+      }
+    ],
+    "7. Analogy generation and modification routes": [
+      {
+        "executionId": "ddb7379c-53f8-48c3-801f-ed419fb5a7b0",
+        "chatSessionId": "sess_af8c391c-1e15-413b-b872-ad822769682b",
+        "timestamp": 1787825992370
+      }
+    ],
+    "8.1 Create `server/src/routes/library.routes.js` and `server/src/controllers/library.controller.js` implementing `GET /api/library` (auth required): returns all analogies for `req.user.userId` ordered by `createdAt` descending; each item includes `id`, `analogyTitle`, `concept` (full text), `analogyWorld`, `createdAt`, `previewNodes` (first 3–4 nodes only)": [
+      {
+        "executionId": "0e5cc704-c1e7-4349-93a6-ce2cad5ce210",
+        "chatSessionId": "sess_d281f212-552a-4435-9abe-b2f9dbda05d9",
+        "timestamp": 1787826691510
+      },
+      {
+        "executionId": "0e5cc704-c1e7-4349-93a6-ce2cad5ce210",
+        "chatSessionId": "sess_d281f212-552a-4435-9abe-b2f9dbda05d9",
+        "timestamp": 1787826829208
+      }
+    ],
+    "8. Library endpoint": [
+      {
+        "executionId": "0e5cc704-c1e7-4349-93a6-ce2cad5ce210",
+        "chatSessionId": "sess_d281f212-552a-4435-9abe-b2f9dbda05d9",
+        "timestamp": 1787826829309
+      }
+    ],
+    "9.1 Create `server/src/routes/practice.routes.js` and `server/src/controllers/practice.controller.js` implementing `POST /api/practice/questions` and `POST /api/practice/questions/more`.": [
+      {
+        "executionId": "bfee9f83-703e-414d-9c88-c1eeb0bd5f24",
+        "chatSessionId": "sess_8ff39998-7d1d-4d6f-b7a6-c2aae38d9887",
+        "timestamp": 1787828623682
+      },
+      {
+        "executionId": "bfee9f83-703e-414d-9c88-c1eeb0bd5f24",
+        "chatSessionId": "sess_8ff39998-7d1d-4d6f-b7a6-c2aae38d9887",
+        "timestamp": 1787828943283
+      }
+    ],
+    "9.2 Implement `POST /api/practice/evaluate` (auth required): validates request, calls `AIService.evaluateAnswer()` (15 000 ms timeout, 2 retries); returns `200 { evaluation: PracticeEvaluation }` or `503 AI_FAILURE`": [
+      {
+        "executionId": "bfee9f83-703e-414d-9c88-c1eeb0bd5f24",
+        "chatSessionId": "sess_8ff39998-7d1d-4d6f-b7a6-c2aae38d9887",
+        "timestamp": 1787828949279
+      },
+      {
+        "executionId": "bfee9f83-703e-414d-9c88-c1eeb0bd5f24",
+        "chatSessionId": "sess_8ff39998-7d1d-4d6f-b7a6-c2aae38d9887",
+        "timestamp": 1787828955934
+      }
+    ],
+    "9.3 Implement `POST /api/practice/sessions` (auth required): creates a new `PracticeSession` document — NEVER uses `findOneAndUpdate`; stores complete `questions`, `answers`, `evaluations` arrays; returns `201 { sessionId }`; implement `GET /api/practice/sessions/:analogyId` (auth, ordered `completedAt` desc, max 50 results) and `GET /api/practice/sessions/:analogyId/:sessionId` (auth + ownership → `403` if mismatch); implement `GET /api/practice/history` (auth required): returns summary records for ALL of the authenticated user's practice sessions across all analogies, ordered by `completedAt` descending (summary data only — no per-question detail); used by `PracticeHistoryPage`": [
+      {
+        "executionId": "bfee9f83-703e-414d-9c88-c1eeb0bd5f24",
+        "chatSessionId": "sess_8ff39998-7d1d-4d6f-b7a6-c2aae38d9887",
+        "timestamp": 1787828964350
+      },
+      {
+        "executionId": "bfee9f83-703e-414d-9c88-c1eeb0bd5f24",
+        "chatSessionId": "sess_8ff39998-7d1d-4d6f-b7a6-c2aae38d9887",
+        "timestamp": 1787828970450
+      }
+    ],
+    "9.6 Write integration tests for practice endpoints using Supertest + MongoDB Memory Server": [
+      {
+        "executionId": "bfee9f83-703e-414d-9c88-c1eeb0bd5f24",
+        "chatSessionId": "sess_8ff39998-7d1d-4d6f-b7a6-c2aae38d9887",
+        "timestamp": 1787828975527
+      },
+      {
+        "executionId": "bfee9f83-703e-414d-9c88-c1eeb0bd5f24",
+        "chatSessionId": "sess_8ff39998-7d1d-4d6f-b7a6-c2aae38d9887",
+        "timestamp": 1787829282906
+      }
+    ],
+    "9. Practice routes and controllers": [
+      {
+        "executionId": "bfee9f83-703e-414d-9c88-c1eeb0bd5f24",
+        "chatSessionId": "sess_8ff39998-7d1d-4d6f-b7a6-c2aae38d9887",
+        "timestamp": 1787829283026
+      }
+    ],
+    "10.1 Create `server/src/services/email/email.service.js` using Nodemailer (SMTP config from `env.js`); implement `sendPasswordResetEmail({ to, resetUrl })` that composes and sends the reset email; the plaintext token appears only in the email URL — never logged or stored": [
+      {
+        "executionId": "54baca91-51b0-49e1-8c00-7d2b32b2a714",
+        "chatSessionId": "sess_62461884-b884-4f20-ae25-31a823494bfe",
+        "timestamp": 1787830400992
+      }
+    ],
+    "10. Email service and password reset wiring": [
+      {
+        "executionId": "54baca91-51b0-49e1-8c00-7d2b32b2a714",
+        "chatSessionId": "sess_62461884-b884-4f20-ae25-31a823494bfe",
+        "timestamp": 1787830401148
+      }
+    ],
+    "11. Checkpoint — backend complete": [
+      {
+        "executionId": "21d19aac-f4f3-4bb3-bf2f-d1bea40f7ee8",
+        "chatSessionId": "sess_f826cc65-39e9-4c48-9e23-3f28d4df789b",
+        "timestamp": 1787830419067
+      },
+      {
+        "executionId": "21d19aac-f4f3-4bb3-bf2f-d1bea40f7ee8",
+        "chatSessionId": "sess_f826cc65-39e9-4c48-9e23-3f28d4df789b",
+        "timestamp": 1787830473913
+      }
+    ],
+    "12.1 Initialise the `client/` package with Vite + React; install dependencies (`react-router-dom`, `reactflow`, `dagre`, `axios`); configure `vite.config.js` with a `/api` proxy to `http://localhost:5000`; create the directory structure matching the design (`api/`, `components/`, `pages/`, `hooks/`, `context/`, `utils/`)": [
+      {
+        "executionId": "abd74071-c05b-4ed5-9ed4-4b676d8bad43",
+        "chatSessionId": "sess_614ffba2-91fb-4629-b2e6-438d22128e8b",
+        "timestamp": 1787830507573
+      },
+      {
+        "executionId": "abd74071-c05b-4ed5-9ed4-4b676d8bad43",
+        "chatSessionId": "sess_614ffba2-91fb-4629-b2e6-438d22128e8b",
+        "timestamp": 1787830683440
+      }
+    ],
+    "12.2 Create `client/src/utils/dagre.js` (`applyDagreLayout(nodes, edges, direction)` using `dagre.graphlib.Graph` with `nodesep: 60, ranksep: 80`, node size `180 × 60`); create `client/src/utils/truncate.js` (`truncate(str, maxLen)` → str + ellipsis if over limit); create `client/src/utils/guestSession.js` (`get`, `set`, `clear` for `sessionStorage[\"guestAnalogy\"]`)": [
+      {
+        "executionId": "abd74071-c05b-4ed5-9ed4-4b676d8bad43",
+        "chatSessionId": "sess_614ffba2-91fb-4629-b2e6-438d22128e8b",
+        "timestamp": 1787830690912
+      },
+      {
+        "executionId": "abd74071-c05b-4ed5-9ed4-4b676d8bad43",
+        "chatSessionId": "sess_614ffba2-91fb-4629-b2e6-438d22128e8b",
+        "timestamp": 1787831008375
+      }
+    ],
+    "12. Client project setup and global infrastructure": [
+      {
+        "executionId": "abd74071-c05b-4ed5-9ed4-4b676d8bad43",
+        "chatSessionId": "sess_614ffba2-91fb-4629-b2e6-438d22128e8b",
+        "timestamp": 1787831008510
+      }
+    ],
+    "14.1 Create `client/src/pages/LoginPage.jsx` and `client/src/pages/RegisterPage.jsx`: `LoginPage` — two fields (Email, Password), inline validation on empty fields, generic `401` message display, post-login check `useGuestSession().get()` → - After successful login, if `guestSession.get()` returns an analogy:": [
+      {
+        "executionId": "7b5aa239-b792-4d1d-b9ce-09cad7d4201c",
+        "chatSessionId": "sess_f067d214-cd66-4007-9466-f63ce5dfe028",
+        "timestamp": 1787831633052
+      },
+      {
+        "executionId": "7b5aa239-b792-4d1d-b9ce-09cad7d4201c",
+        "chatSessionId": "sess_f067d214-cd66-4007-9466-f63ce5dfe028",
+        "timestamp": 1787831793975
+      }
+    ],
+    "14.2 Create `client/src/pages/ForgotPasswordPage.jsx` (single email field, always shows success message regardless of outcome) and `client/src/pages/ResetPasswordPage.jsx` (New Password + Confirm New Password fields, 8–128 char client validation, shows `RESET_TOKEN_INVALID` error with \"Request a new reset link\" button on `400`)": [
+      {
+        "executionId": "7b5aa239-b792-4d1d-b9ce-09cad7d4201c",
+        "chatSessionId": "sess_f067d214-cd66-4007-9466-f63ce5dfe028",
+        "timestamp": 1787831795121
+      }
+    ],
+    "14. Auth pages": [
+      {
+        "executionId": "7b5aa239-b792-4d1d-b9ce-09cad7d4201c",
+        "chatSessionId": "sess_f067d214-cd66-4007-9466-f63ce5dfe028",
+        "timestamp": 1787831795329
+      }
+    ],
+    "14.3 Write component tests for `LoginPage` (empty fields → inline errors; `401` → generic message; no email/password distinction) and `RegisterPage` (confirm password mismatch → \"Passwords do not match.\"; `confirmPassword` not in submitted payload)": [
+      {
+        "executionId": "fd10989b-4612-4e82-9ae4-e36d29dfe203",
+        "chatSessionId": "sess_16a9b454-fc04-49e2-b5a8-a0ecaaa54659",
+        "timestamp": 1787831819460
+      },
+      {
+        "executionId": "fd10989b-4612-4e82-9ae4-e36d29dfe203",
+        "chatSessionId": "sess_16a9b454-fc04-49e2-b5a8-a0ecaaa54659",
+        "timestamp": 1787832180999
+      }
+    ],
+    "16.1 Create `client/src/components/analogy/ExplanationPanel.jsx` (renders `explanation` as formatted text; if absent shows error message, hides limitations), `client/src/components/analogy/LimitationsPanel.jsx` (renders each limitation as a separate list item with bullet/numbered marker under \"Where This Analogy Breaks Down\" heading); both display AI content from structured JSON fields — never raw JSON syntax visible to user": [
+      {
+        "executionId": "c7f07ac2-310b-47ea-b65f-958e7df1c68a",
+        "chatSessionId": "sess_a4420414-e952-4ee4-8c47-ca930bcbb74f",
+        "timestamp": 1787833569505
+      }
+    ],
+    "16.2 Create `client/src/components/analogy/ModificationControls.jsx` (buttons: Simplify, More Detail, Regenerate, Switch World; disabled during modification; re-enabled on error; \"Simplify\" button disabled client-side when node count = 1 with descriptive message; \"More Detail\" button disabled when node count = 20; inline `InlineError` on modification failure); wire into `AnalogyPage.jsx` alongside `VisualModel`, `ExplanationPanel`, `LimitationsPanel`": [
+      {
+        "executionId": "c7f07ac2-310b-47ea-b65f-958e7df1c68a",
+        "chatSessionId": "sess_a4420414-e952-4ee4-8c47-ca930bcbb74f",
+        "timestamp": 1787833571150
+      }
+    ],
+    "16.3 Create `client/src/components/analogy/GuestPrompt.jsx` (three actions: Create Account → `/register`, Log In → `/login`, Dismiss → hide prompt + disable concept form); create `client/src/components/ui/InlineError.jsx`, `BannerError.jsx` (dismissible with \"Try again\" action), `LoadingSpinner.jsx`, `EmptyState.jsx`": [
+      {
+        "executionId": "c7f07ac2-310b-47ea-b65f-958e7df1c68a",
+        "chatSessionId": "sess_a4420414-e952-4ee4-8c47-ca930bcbb74f",
+        "timestamp": 1787833572313
+      }
+    ],
+    "16. Explanation, limitations, modification controls, and guest prompt": [
+      {
+        "executionId": "c7f07ac2-310b-47ea-b65f-958e7df1c68a",
+        "chatSessionId": "sess_a4420414-e952-4ee4-8c47-ca930bcbb74f",
+        "timestamp": 1787833572516
+      },
+      {
+        "executionId": "c7f07ac2-310b-47ea-b65f-958e7df1c68a",
+        "chatSessionId": "sess_a4420414-e952-4ee4-8c47-ca930bcbb74f",
+        "timestamp": 1787833572554
+      }
+    ],
+    "17. Library page and analogy card": [
+      {
+        "executionId": "62056c55-c397-43fc-ab0d-03189df417fe",
+        "chatSessionId": "sess_3e007690-e9e1-49b9-be5e-4ec9b1d8b622",
+        "timestamp": 1787834702755
+      }
+    ],
+    "17.1 Create `client/src/components/library/AnalogyCard.jsx` (displays `analogyTitle` as primary title; `concept` truncated at 100 chars via `truncate()`; `analogyWorld`; `createdAt` formatted as YYYY-MM-DD; text-based `previewNodes` preview listing first 3–4 nodes as `conceptLabel → analogyLabel` separated by line breaks; \"Open\" and \"Practice\" shortcut actions); create `client/src/components/library/LibraryGrid.jsx` (renders cards array; empty state via `EmptyState` if none)": [
+      {
+        "executionId": "365930e5-653a-4e2d-8a89-63bf204457a1",
+        "chatSessionId": "sess_de947bd8-69a3-4935-be1a-8a5261e91335",
+        "timestamp": 1787834819352
+      }
+    ],
+    "17.2 Create `client/src/pages/LibraryPage.jsx` (auth-guarded via `ProtectedRoute`; fetches `GET /api/library` on mount; renders `LibraryGrid`; page-level `BannerError` on fetch failure retaining displayed state); individual analogy view in `AnalogyPage.jsx` at `/library/:id` — primary heading is `analogyTitle` (NOT \"My Library\"), displays `VisualModel`, `ExplanationPanel`, `LimitationsPanel`, `ModificationControls`, Practice button": [
+      {
+        "executionId": "365930e5-653a-4e2d-8a89-63bf204457a1",
+        "chatSessionId": "sess_de947bd8-69a3-4935-be1a-8a5261e91335",
+        "timestamp": 1787834819450
+      }
+    ],
+    "18.1 Create `client/src/components/layout/Navbar.jsx` (shows Library and Practice links for authenticated users; shows Login/Register for guests; uses `useAuth()`); set up `client/src/main.jsx` with `BrowserRouter` and all routes from the design: public routes, `ProtectedRoute`-wrapped library/practice routes, auth pages": [
+      {
+        "executionId": "365930e5-653a-4e2d-8a89-63bf204457a1",
+        "chatSessionId": "sess_de947bd8-69a3-4935-be1a-8a5261e91335",
+        "timestamp": 1787834819542
+      },
+      {
+        "executionId": "365930e5-653a-4e2d-8a89-63bf204457a1",
+        "chatSessionId": "sess_de947bd8-69a3-4935-be1a-8a5261e91335",
+        "timestamp": 1787834829684
+      },
+      {
+        "executionId": "365930e5-653a-4e2d-8a89-63bf204457a1",
+        "chatSessionId": "sess_de947bd8-69a3-4935-be1a-8a5261e91335",
+        "timestamp": 1787835028357
+      }
+    ],
+    "19.1 Create `client/src/hooks/usePractice.js` implementing the full practice state machine (`idle → loading_questions → questions_ready → evaluating → evaluated → summary → saving → saved`); on evaluation timeout: `evalLoading: false`, `error` set, `currentIndex`/`answers`/`evaluations` preserved, user can retry current question; \"Practice Again\" resets all state; score computed as `Math.round(correctCount / total * 100)`; additionally handle `save_error` state: when `POST /api/practice/sessions` fails, transition to `save_error` (session data retained in frontend state, user can see summary but save failed — do NOT discard session data)": [
+      {
+        "executionId": "365930e5-653a-4e2d-8a89-63bf204457a1",
+        "chatSessionId": "sess_de947bd8-69a3-4935-be1a-8a5261e91335",
+        "timestamp": 1787834819619
+      }
+    ],
+    "19.2 Create `client/src/components/practice/AnswerOption.jsx` (states: `unselected`, `selected`, `correct`, `incorrect` via className; `role=\"radio\"`, keyboard selectable); create `client/src/components/practice/MultipleChoiceInput.jsx` (renders `AnswerOption` list, disables all after selection, submit only enabled when option selected); create `client/src/components/practice/ShortAnswerInput.jsx` (`<textarea>`, trims whitespace before submit, disabled after submission)": [
+      {
+        "executionId": "365930e5-653a-4e2d-8a89-63bf204457a1",
+        "chatSessionId": "sess_de947bd8-69a3-4935-be1a-8a5261e91335",
+        "timestamp": 1787834819733
+      }
+    ],
+    "19.3 Create `client/src/components/practice/MappingReference.jsx` (renders `mappingLabel` as visually distinct callout; derived from structured data — never raw AI text as HTML); create `client/src/components/practice/ExplanationDropdown.jsx` (accessible collapsible via `<details>`/`<summary>` or `aria-expanded`; collapsed by default; trigger: \"▾ See explanation\"; correct: shows why correct + `MappingReference`; incorrect: shows correct answer + explanation + `MappingReference` + encouragement)": [
+      {
+        "executionId": "365930e5-653a-4e2d-8a89-63bf204457a1",
+        "chatSessionId": "sess_de947bd8-69a3-4935-be1a-8a5261e91335",
+        "timestamp": 1787834819814
+      }
+    ],
+    "19.4 Create `client/src/components/practice/EvaluationFeedback.jsx` (correct → green option + \"Correct ✓\" text + collapsed `ExplanationDropdown`; incorrect → red option + \"Not quite ✕\" text + collapsed `ExplanationDropdown`; uses `MappingReference`); create `client/src/components/practice/PracticeQuestion.jsx` (dispatches to `MultipleChoiceInput` or `ShortAnswerInput`; shows question number indicator \"Question N of M\"; disabled once answered)": [
+      {
+        "executionId": "365930e5-653a-4e2d-8a89-63bf204457a1",
+        "chatSessionId": "sess_de947bd8-69a3-4935-be1a-8a5261e91335",
+        "timestamp": 1787834819897
+      }
+    ],
+    "19.5 Create `client/src/components/practice/PracticeSessionSummary.jsx` (total questions, correct count, score %, mappings understood, mappings struggled with, per-incorrect explanations, encouraging message, \"Practice Again\" and \"Generate More Questions\" buttons)": [
+      {
+        "executionId": "365930e5-653a-4e2d-8a89-63bf204457a1",
+        "chatSessionId": "sess_de947bd8-69a3-4935-be1a-8a5261e91335",
+        "timestamp": 1787834819979
+      }
+    ],
+    "20.1 Create `client/src/components/practice/PracticeLanding.jsx` and `client/src/components/practice/PracticeAnalogySelector.jsx`; create `client/src/pages/PracticeLandingPage.jsx` (auth-guarded; fetches `GET /api/library` on mount; heading + \"Choose an analogy to test your understanding\" message; `EmptyState` if no saved analogies with link to `/analogy`; on selection navigate to `/practice/:analogyId`)": [
+      {
+        "executionId": "365930e5-653a-4e2d-8a89-63bf204457a1",
+        "chatSessionId": "sess_de947bd8-69a3-4935-be1a-8a5261e91335",
+        "timestamp": 1787834820067
+      }
+    ],
+    "20.2 Create `client/src/pages/PracticeSessionPage.jsx` (extracts `analogyId` from route params; fetches `GET /api/analogies/:id`; posts to `POST /api/practice/questions`; uses `usePractice`; renders one `PracticeQuestion` at a time; on evaluation timeout shows error + \"Try Again\"; on session complete posts `POST /api/practice/sessions` then shows `PracticeSessionSummary`; \"Generate More Questions\" posts `POST /api/practice/questions/more` with `previousQuestions`)": [
+      {
+        "executionId": "365930e5-653a-4e2d-8a89-63bf204457a1",
+        "chatSessionId": "sess_de947bd8-69a3-4935-be1a-8a5261e91335",
+        "timestamp": 1787834820137
+      }
+    ],
+    "20.3 Create `client/src/components/practice/PracticeHistory.jsx` and `client/src/components/practice/PracticeHistoryCard.jsx` (displays `analogyTitle`, `analogyWorld`, formatted `completedAt`, score %, question count, weak area count; clickable → `/practice/:analogyId/session/:sessionId`); create `client/src/pages/PracticeHistoryPage.jsx` (auth-guarded; fetches `GET /api/practice/history`; renders `PracticeHistory`; empty state if none; ordered newest first)": [
+      {
+        "executionId": "365930e5-653a-4e2d-8a89-63bf204457a1",
+        "chatSessionId": "sess_de947bd8-69a3-4935-be1a-8a5261e91335",
+        "timestamp": 1787834820217
+      }
+    ],
+    "20.4 Create `client/src/components/practice/PracticeSessionReview.jsx` (read-only render of all questions + user answers + `EvaluationFeedback` with collapsed `ExplanationDropdown` available for each; ZERO AI calls; \"Practice Again\" → `/practice/:analogyId`; \"Generate More Questions\" → posts `POST /api/practice/questions/more` with session's question texts then navigates to session); create `client/src/pages/PracticeSessionReviewPage.jsx` (extracts `analogyId` and `sessionId`; fetches `GET /api/practice/sessions/:analogyId/:sessionId`; renders `PracticeSessionReview`)": [
+      {
+        "executionId": "365930e5-653a-4e2d-8a89-63bf204457a1",
+        "chatSessionId": "sess_de947bd8-69a3-4935-be1a-8a5261e91335",
+        "timestamp": 1787834820297
+      }
+    ],
+    "21.1 Add round-trip validation in `analogy.controller.js` save/update paths: after AI_Response is stored and retrieved, re-run `validateAIResponse` on the deserialized document; verify `analogyTitle` and all fields survive `JSON.stringify → JSON.parse` exactly; add input sanitization for `guestAnalogy` transfer paths (both registration and post-login) — `validateAIResponse` MUST pass before saving; reject otherwise (registration still succeeds)": [
+      {
+        "executionId": "365930e5-653a-4e2d-8a89-63bf204457a1",
+        "chatSessionId": "sess_de947bd8-69a3-4935-be1a-8a5261e91335",
+        "timestamp": 1787834820370
+      }
+    ],
+    "22. Final checkpoint — full stack integration": [
+      {
+        "executionId": "365930e5-653a-4e2d-8a89-63bf204457a1",
+        "chatSessionId": "sess_de947bd8-69a3-4935-be1a-8a5261e91335",
+        "timestamp": 1787834820443
+      }
+    ],
+    "18. Navbar and routing setup": [
+      {
+        "executionId": "365930e5-653a-4e2d-8a89-63bf204457a1",
+        "chatSessionId": "sess_de947bd8-69a3-4935-be1a-8a5261e91335",
+        "timestamp": 1787835028497
+      }
+    ],
+    "19. Practice mode — session components and hooks": [
+      {
+        "executionId": "a9009cdf-2894-4767-9c02-d2dd98e7bca4",
+        "chatSessionId": "sess_26ad844e-668f-4941-9eb2-6c4d81bfdedd",
+        "timestamp": 1787835967335
+      }
+    ],
+    "20. Practice pages — landing, session, history, and review": [
+      {
+        "executionId": "384c9adb-c892-4743-80d0-5949d3e357fb",
+        "chatSessionId": "sess_aea10ad0-6fc4-4317-a9e8-982c72ee5373",
+        "timestamp": 1787836705352
+      }
+    ]
+  }
+}

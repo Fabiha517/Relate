@@ -1,0 +1,90 @@
+﻿.practice-history-page {
+  padding: var(--space-8, 32px) var(--space-4, 16px);
+  max-width: 1400px;
+  margin: 0 auto;
+}
+
+.practice-history-header {
+  margin-bottom: var(--space-8, 32px);
+}
+
+.practice-history-header h1 {
+  margin: 0;
+  font-size: 1.75rem;
+  font-weight: 700;
+  color: var(--color-text-primary, #1a1a2e);
+}
+
+.practice-history-subtitle {
+  margin: var(--space-2, 8px) 0 0 0;
+  font-size: 0.875rem;
+  color: var(--color-text-secondary, #6b6b8a);
+}
+
+.practice-history-loading {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 400px;
+}
+
+/* Mobile */
+@media (max-width: 767px) {
+  .practice-history-page {
+    padding: var(--space-6, 24px) var(--space-4, 16px);
+  }
+
+  .practice-history-header h1 {
+    font-size: 1.5rem;
+  }
+}
+
+
+/* =========================================================
+   TOAST NOTIFICATIONS (fixed position, no layout shift)
+   ========================================================= */
+
+.practice-history-toast-area {
+  position: fixed;
+  bottom: 24px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 500;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  pointer-events: none;
+}
+
+.practice-history-toast {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 20px;
+  border-radius: 12px;
+  border: 2px solid;
+  font-size: 13px;
+  font-weight: 700;
+  box-shadow: 3px 3px 0 rgba(7, 26, 56, 0.12);
+  white-space: nowrap;
+  animation: phToastIn 0.2s ease;
+}
+
+.practice-history-toast--success {
+  background: #dff8f6;
+  border-color: #17aaa7;
+  color: #071a38;
+}
+
+.practice-history-toast--error {
+  background: #ffebe9;
+  border-color: #f27d6b;
+  color: #071a38;
+}
+
+@keyframes phToastIn {
+  from { opacity: 0; transform: translateY(8px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+

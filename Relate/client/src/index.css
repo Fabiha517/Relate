@@ -1,0 +1,452 @@
+@import "tailwindcss";
+
+/* Optional: Custom utility classes */
+@layer utilities {
+  .text-shadow {
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.1);
+  }
+}
+html,
+body,
+#root {
+  width: 100%;
+  min-height: 100%;
+  margin: 0;
+}
+.glow-cursor {
+  position: relative;
+  width: 100%;
+   min-height: 100vh;}
+
+.glow-cursor__canvas {
+  position: fixed;
+  inset: 0;
+  width: 100vw;
+  height: 100vh;
+  pointer-events: none;
+  z-index: 999999;
+}
+
+.glow-cursor__content {
+  position: relative;
+  z-index: 1;
+}
+/* =========================================================
+   RELATE — WORLD CARD ANIMATIONS
+   ========================================================= */
+
+/* ---------------------------------------------------------
+   RESTAURANT
+--------------------------------------------------------- */
+
+@keyframes relateRestaurantFloat {
+  0%,
+  100% {
+    transform: rotate(-5deg) translate3d(0, 0, 0);
+  }
+
+  25% {
+    transform: rotate(-3.5deg) translate3d(0, -8px, 0);
+  }
+
+  50% {
+    transform: rotate(-6deg) translate3d(3px, -13px, 0);
+  }
+
+  75% {
+    transform: rotate(-4deg) translate3d(-3px, -6px, 0);
+  }
+}
+
+
+/* ---------------------------------------------------------
+   SPORTS
+--------------------------------------------------------- */
+
+@keyframes relateSportsFloat {
+  0%,
+  100% {
+    transform: rotate(2deg) translate3d(0, 0, 0);
+  }
+
+  25% {
+    transform: rotate(3.5deg) translate3d(-3px, -11px, 0);
+  }
+
+  50% {
+    transform: rotate(1deg) translate3d(2px, -17px, 0);
+  }
+
+  75% {
+    transform: rotate(2.8deg) translate3d(4px, -8px, 0);
+  }
+}
+
+
+/* ---------------------------------------------------------
+   MOVIES
+--------------------------------------------------------- */
+
+@keyframes relateMoviesFloat {
+  0%,
+  100% {
+    transform: rotate(-3deg) translate3d(0, 0, 0);
+  }
+
+  30% {
+    transform: rotate(-1deg) translate3d(3px, -9px, 0);
+  }
+
+  55% {
+    transform: rotate(-4.5deg) translate3d(-2px, -15px, 0);
+  }
+
+  80% {
+    transform: rotate(-2deg) translate3d(2px, -7px, 0);
+  }
+}
+
+
+/* ---------------------------------------------------------
+   CARD LIGHT SWEEP
+--------------------------------------------------------- */
+
+@keyframes relateCardShine {
+  0% {
+    transform: translateX(-140%) rotate(18deg);
+    opacity: 0;
+  }
+
+  12% {
+    opacity: 0;
+  }
+
+  25% {
+    opacity: 0.18;
+  }
+
+  45% {
+    opacity: 0;
+  }
+
+  100% {
+    transform: translateX(180%) rotate(18deg);
+    opacity: 0;
+  }
+}
+
+
+/* ---------------------------------------------------------
+   CARD IMAGE FLOAT
+--------------------------------------------------------- */
+
+@keyframes relateImageFloat {
+  0%,
+  100% {
+    transform: translateY(0) rotate(0deg);
+  }
+
+  50% {
+    transform: translateY(-6px) rotate(2deg);
+  }
+}
+
+
+/* ---------------------------------------------------------
+   NETWORK FLOW
+--------------------------------------------------------- */
+
+@keyframes relateNetworkFlow {
+  from {
+    stroke-dashoffset: 0;
+  }
+
+  to {
+    stroke-dashoffset: -48;
+  }
+}
+
+
+/* ---------------------------------------------------------
+   NETWORK NODE PULSE
+--------------------------------------------------------- */
+
+@keyframes relateNodePulse {
+  0%,
+  100% {
+    transform: scale(1);
+    opacity: 0.75;
+  }
+
+  50% {
+    transform: scale(1.45);
+    opacity: 1;
+  }
+}
+
+
+/* =========================================================
+   CLASSES
+   ========================================================= */
+
+.relate-card-restaurant {
+  animation:
+    relateRestaurantFloat 7s ease-in-out infinite;
+  transform-origin: center center;
+  will-change: transform;
+}
+
+.relate-card-sports {
+  animation:
+    relateSportsFloat 8s ease-in-out infinite;
+  animation-delay: -2.2s;
+  transform-origin: center center;
+  will-change: transform;
+}
+
+.relate-card-movies {
+  animation:
+    relateMoviesFloat 7.5s ease-in-out infinite;
+  animation-delay: -4.1s;
+  transform-origin: center center;
+  will-change: transform;
+}
+
+
+/* ---------------------------------------------------------
+   IMAGE MOTION
+--------------------------------------------------------- */
+
+.relate-card-image {
+  animation:
+    relateImageFloat 4s ease-in-out infinite;
+  animation-delay: -1s;
+  will-change: transform;
+}
+
+
+/* Different timing per image */
+
+.relate-card-sports .relate-card-image {
+  animation-delay: -2s;
+}
+
+.relate-card-movies .relate-card-image {
+  animation-delay: -3s;
+}
+
+
+/* ---------------------------------------------------------
+   SHINE
+--------------------------------------------------------- */
+
+.relate-card-shine {
+  position: absolute;
+  inset: -40%;
+
+  width: 45%;
+
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(255, 255, 255, 0.65),
+    transparent
+  );
+
+  pointer-events: none;
+
+  animation:
+    relateCardShine 5.5s ease-in-out infinite;
+
+  z-index: 5;
+}
+
+
+/* ---------------------------------------------------------
+   NETWORK PATH
+--------------------------------------------------------- */
+
+.relate-network-path {
+  animation:
+    relateNetworkFlow 3.5s linear infinite;
+}
+
+
+/* ---------------------------------------------------------
+   NETWORK DOTS
+--------------------------------------------------------- */
+
+.relate-network-node {
+  transform-box: fill-box;
+  transform-origin: center;
+
+  animation:
+    relateNodePulse 2.4s ease-in-out infinite;
+}
+
+.relate-network-node:nth-of-type(2) {
+  animation-delay: -0.6s;
+}
+
+.relate-network-node:nth-of-type(3) {
+  animation-delay: -1.2s;
+}
+
+.relate-network-node:nth-of-type(4) {
+  animation-delay: -1.8s;
+}
+
+
+/* =========================================================
+   HOVER
+   ========================================================= */
+
+.relate-card {
+  transition:
+    filter 300ms ease,
+    box-shadow 300ms ease;
+}
+
+.relate-card:hover {
+  filter: brightness(1.04);
+
+  box-shadow:
+    0 18px 35px rgba(7, 26, 56, 0.16);
+}
+
+
+/* =========================================================
+   ACCESSIBILITY
+   ========================================================= */
+
+@media (prefers-reduced-motion: reduce) {
+
+  .relate-card-restaurant,
+  .relate-card-sports,
+  .relate-card-movies,
+  .relate-card-image,
+  .relate-card-shine,
+  .relate-network-path,
+  .relate-network-node {
+    animation: none !important;
+  }
+
+}.visual-world-node {
+  width: 170px;
+  min-height: 80px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  padding: 16px;
+
+  position: relative;
+
+  font-weight: 700;
+  text-align: center;
+}
+
+/* Restaurant */
+
+.visual-world-node--restaurant[data-shape="plate"] {
+  border-radius: 50%;
+}
+
+.visual-world-node--restaurant[data-shape="tray"] {
+  border-radius: 18px;
+}
+
+.visual-world-node--restaurant[data-shape="table"] {
+  border-radius: 12px 12px 28px 28px;
+}
+
+.visual-world-node--restaurant[data-shape="menu-card"] {
+  border-radius: 6px;
+}
+
+
+/* Space */
+
+.visual-world-node--space[data-shape="planet"] {
+  border-radius: 50%;
+}
+
+.visual-world-node--space[data-shape="orbital"] {
+  border-radius: 50%;
+  clip-path: ellipse(45% 35% at 50% 50%);
+}
+
+.visual-world-node--space[data-shape="capsule"] {
+  border-radius: 50px;
+}
+
+.visual-world-node--space[data-shape="panel"] {
+  border-radius: 10px;
+}
+
+
+/* Library */
+
+.visual-world-node--library[data-shape="book"] {
+  border-radius: 6px 18px 18px 6px;
+}
+
+.visual-world-node--library[data-shape="card"] {
+  border-radius: 10px;
+}
+
+.visual-world-node--library[data-shape="shelf"] {
+  border-radius: 4px;
+}
+
+.visual-world-node--library[data-shape="catalog"] {
+  border-radius: 14px;
+}
+
+
+/* Sports */
+
+.visual-world-node--sports[data-shape="badge"] {
+  clip-path: polygon(
+    50% 0%,
+    90% 20%,
+    100% 60%,
+    70% 100%,
+    30% 100%,
+    0% 60%,
+    10% 20%
+  );
+}
+
+.visual-world-node--sports[data-shape="scoreboard"] {
+  border-radius: 8px;
+}
+
+.visual-world-node--sports[data-shape="ball"] {
+  border-radius: 50%;
+}
+
+.visual-world-node--sports[data-shape="ticket"] {
+  border-radius: 12px;
+  
+}
+
+
+/* Movies */
+
+.visual-world-node--movies[data-shape="film"] {
+  border-radius: 4px;
+}
+
+.visual-world-node--movies[data-shape="ticket"] {
+  border-radius: 18px;
+}
+
+.visual-world-node--movies[data-shape="screen"] {
+  border-radius: 10px;
+}
+
+.visual-world-node--movies[data-shape="clapper"] {
+  border-radius: 6px;
+}

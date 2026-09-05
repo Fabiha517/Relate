@@ -1,0 +1,520 @@
+﻿/* =========================================================
+   ANALOGY CARD
+   ========================================================= */
+
+.analogy-card {
+  position: relative;
+  overflow: hidden;
+
+  background: #fffdf8;
+  border: 1px solid #d8d0c4;
+  border-radius: 18px;
+
+  color: #17243a;
+
+  transition:
+    transform 220ms ease,
+    box-shadow 220ms ease,
+    border-color 220ms ease;
+
+  box-shadow:
+    0 8px 25px rgba(23, 36, 58, 0.055);
+
+  isolation: isolate;
+}
+
+.analogy-card:hover {
+  transform: translateY(-7px) rotate(-0.25deg);
+
+  border-color: var(--card-accent);
+
+  box-shadow:
+    0 20px 45px rgba(23, 36, 58, 0.11);
+}
+
+
+/* =========================================================
+   WORLD VISUAL
+   ========================================================= */
+
+.analogy-card__visual {
+  position: relative;
+
+  height: 178px;
+
+  overflow: hidden;
+
+  background:
+    linear-gradient(
+      135deg,
+      color-mix(in srgb, var(--card-accent) 10%, #fffdf8),
+      #fffdf8 70%
+    );
+
+  border-bottom: 1px solid #e4ddd3;
+
+  color: var(--card-accent);
+}
+
+
+/* subtle paper texture */
+
+.analogy-card__visual::after {
+  content: '';
+
+  position: absolute;
+  inset: 0;
+
+  pointer-events: none;
+
+  opacity: 0.25;
+
+  background-image:
+    radial-gradient(
+      rgba(23, 36, 58, 0.12) 0.6px,
+      transparent 0.6px
+    );
+
+  background-size: 7px 7px;
+}
+
+
+/* =========================================================
+   WORLD LABEL
+   ========================================================= */
+
+.analogy-card__world-label {
+  position: absolute;
+
+  top: 18px;
+  left: 20px;
+
+  z-index: 3;
+
+  display: flex;
+  align-items: center;
+  gap: 8px;
+
+  font-size: 10px;
+  font-weight: 700;
+
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+
+  color: #17243a;
+}
+
+.analogy-card__world-dot {
+  width: 7px;
+  height: 7px;
+
+  border-radius: 50%;
+
+  background: var(--card-accent);
+}
+
+
+/* =========================================================
+   NODE COUNT
+   ========================================================= */
+
+.analogy-card__number {
+  position: absolute;
+
+  top: 17px;
+  right: 20px;
+
+  z-index: 3;
+
+  font-family: Georgia, serif;
+
+  font-size: 13px;
+
+  color: var(--card-accent);
+
+  opacity: 0.75;
+}
+
+
+/* =========================================================
+   ABSTRACT WORLD ART
+   ========================================================= */
+
+.analogy-card__world-art {
+  position: absolute;
+
+  width: 115%;
+  height: 115%;
+
+  left: -5%;
+  top: 3%;
+
+  opacity: 0.45;
+
+  transition:
+    transform 500ms cubic-bezier(.2,.8,.2,1),
+    opacity 250ms ease;
+}
+
+.analogy-card:hover .analogy-card__world-art {
+  transform: scale(1.08) translateX(8px);
+
+  opacity: 0.7;
+}
+
+
+/* =========================================================
+   VISUAL CAPTION
+   ========================================================= */
+
+.analogy-card__visual-caption {
+  position: absolute;
+
+  left: 20px;
+  right: 20px;
+  bottom: 15px;
+
+  z-index: 3;
+
+  display: flex;
+  justify-content: space-between;
+
+  font-size: 8px;
+  font-weight: 700;
+
+  letter-spacing: 0.13em;
+
+  color: #17243a;
+
+  opacity: 0.55;
+}
+
+
+/* =========================================================
+   BODY
+   ========================================================= */
+
+.analogy-card__body {
+  padding: 21px 21px 18px;
+}
+
+
+/* =========================================================
+   META
+   ========================================================= */
+
+.analogy-card__meta {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+
+  margin-bottom: 10px;
+
+  font-size: 10px;
+
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+
+  color: #7b7b86;
+}
+
+.analogy-card__meta-line {
+  width: 22px;
+  height: 1px;
+
+  background: #cfc8be;
+}
+
+
+/* =========================================================
+   TITLE
+   ========================================================= */
+
+.analogy-card__title {
+  margin: 0;
+
+  max-width: 95%;
+
+  font-family: Georgia, 'Times New Roman', serif;
+
+  font-size: 23px;
+  line-height: 1.08;
+
+  font-weight: 600;
+
+  letter-spacing: -0.025em;
+
+  color: #17243a;
+}
+
+
+/* =========================================================
+   CONCEPT
+   ========================================================= */
+
+.analogy-card__concept {
+  margin: 9px 0 19px;
+
+  font-size: 12px;
+
+  line-height: 1.55;
+
+  color: #777582;
+}
+
+
+/* =========================================================
+   MAPPING
+   ========================================================= */
+
+.analogy-card__mapping {
+  padding: 12px 0;
+
+  border-top: 1px dashed #d8d0c4;
+  border-bottom: 1px dashed #d8d0c4;
+}
+
+.analogy-card__mapping-row {
+  display: grid;
+
+  grid-template-columns:
+    minmax(0, 1fr)
+    32px
+    minmax(0, 1.15fr);
+
+  align-items: center;
+
+  min-height: 28px;
+
+  font-size: 10px;
+
+  line-height: 1.25;
+}
+
+.analogy-card__mapping-row + .analogy-card__mapping-row {
+  margin-top: 3px;
+}
+
+
+/* concept */
+
+.mapping-concept {
+  overflow: hidden;
+
+  white-space: nowrap;
+  text-overflow: ellipsis;
+
+  color: #777582;
+}
+
+
+/* connection */
+
+.mapping-line {
+  position: relative;
+
+  height: 1px;
+
+  margin: 0 7px;
+
+  background: #cfc8be;
+}
+
+.mapping-line::after {
+  content: '';
+
+  position: absolute;
+
+  right: -1px;
+  top: -2px;
+
+  width: 5px;
+  height: 5px;
+
+  border-top: 1px solid #99939a;
+  border-right: 1px solid #99939a;
+
+  transform: rotate(45deg);
+}
+
+
+/* analogy */
+
+.mapping-analogy {
+  overflow: hidden;
+
+  white-space: nowrap;
+  text-overflow: ellipsis;
+
+  font-weight: 650;
+
+  color: #17243a;
+}
+
+
+/* =========================================================
+   ACTIONS
+   ========================================================= */
+
+.analogy-card__actions {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+
+  margin-top: 17px;
+}
+
+
+.analogy-card__open {
+  flex: 1;
+
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+  min-height: 40px;
+
+  padding: 0 13px;
+
+  border: 1px solid #17243a;
+  border-radius: 8px;
+
+  background: #17243a;
+
+  color: #fffdf8;
+
+  font-size: 11px;
+  font-weight: 650;
+
+  cursor: pointer;
+
+  transition:
+    background 160ms ease,
+    transform 160ms ease;
+}
+
+.analogy-card__open:hover {
+  background: var(--card-accent);
+
+  transform: translateX(2px);
+}
+
+
+.analogy-card__arrow {
+  font-size: 17px;
+  line-height: 1;
+}
+
+
+.analogy-card__practice {
+  min-height: 40px;
+
+  padding: 0 14px;
+
+  border: 1px solid #d8d0c4;
+  border-radius: 8px;
+
+  background: transparent;
+
+  color: #17243a;
+
+  font-size: 11px;
+  font-weight: 600;
+
+  cursor: pointer;
+
+  transition:
+    border-color 160ms ease,
+    background 160ms ease;
+}
+
+.analogy-card__practice:hover {
+  border-color: var(--card-accent);
+
+  background: color-mix(
+    in srgb,
+    var(--card-accent) 7%,
+    transparent
+  );
+}
+
+
+/* =========================================================
+   DECORATIVE EDGE
+   ========================================================= */
+
+.analogy-card__edge {
+  position: absolute;
+
+  left: 0;
+  bottom: 0;
+
+  width: 0;
+  height: 3px;
+
+  background: var(--card-accent);
+
+  transition: width 300ms ease;
+}
+
+.analogy-card:hover .analogy-card__edge {
+  width: 100%;
+}
+
+
+/* =========================================================
+   MOBILE
+   ========================================================= */
+
+@media (max-width: 600px) {
+  .analogy-card__visual {
+    height: 155px;
+  }
+
+  .analogy-card__title {
+    font-size: 21px;
+  }
+
+  .analogy-card__body {
+    padding: 18px;
+  }
+}
+
+    
+
+/* =========================================================
+   DELETE BUTTON
+   ========================================================= */
+
+.relate-card__delete {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  min-height: 36px;
+  min-width: 36px;
+
+  border: 1px solid transparent;
+  border-radius: 8px;
+
+  background: transparent;
+
+  color: #c9c5bb;
+
+  font-size: 12px;
+  font-weight: 700;
+
+  cursor: pointer;
+
+  transition:
+    color 160ms ease,
+    background 160ms ease,
+    border-color 160ms ease;
+}
+
+.relate-card__delete:hover {
+  color: #f27d6b;
+  background: color-mix(in srgb, #f27d6b 10%, transparent);
+  border-color: #f27d6b;
+}
+

@@ -1,0 +1,56 @@
+.practice-session-review-page {
+  padding: var(--space-8, 32px) var(--space-4, 16px);
+  max-width: 900px;
+  margin: 0 auto;
+}
+
+.practice-session-review-loading {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-4, 16px);
+  min-height: 400px;
+}
+
+.practice-session-review-container {
+  width: 100%;
+}
+
+.practice-session-review-header {
+  margin-bottom: var(--space-8, 32px);
+}
+
+.practice-session-review-header h1 {
+  margin: 0;
+  font-size: 1.75rem;
+  font-weight: 700;
+  color: var(--color-text-primary, #1a1a2e);
+}
+
+.practice-session-review-world {
+  margin: var(--space-2, 8px) 0 0 0;
+  font-size: 0.875rem;
+  color: var(--color-text-secondary, #6b6b8a);
+}
+
+.practice-session-review-date {
+  margin: var(--space-1, 4px) 0 0 0;
+  font-size: 0.75rem;
+  color: var(--color-text-secondary, #6b6b8a);
+}
+
+.practice-session-review-content {
+  width: 100%;
+}
+
+/* Mobile */
+@media (max-width: 767px) {
+  .practice-session-review-page {
+    padding: var(--space-6, 24px) var(--space-4, 16px);
+  }
+
+  .practice-session-review-header h1 {
+    font-size: 1.5rem;
+  }
+}

@@ -1,0 +1,98 @@
+/* AnswerOption component styles */
+
+.answer-option {
+  display: flex;
+  align-items: center;
+  gap: var(--space-4);
+  width: 100%;
+  min-height: 52px;
+  border-radius: 10px;
+  border: 1.5px solid var(--color-border-default);
+  background: var(--color-bg-card);
+  padding: var(--space-3) var(--space-4);
+  cursor: pointer;
+  transition: border-color 120ms ease, background-color 120ms ease;
+  outline: none;
+}
+
+.answer-option:focus-visible {
+  outline: 2px solid var(--color-accent-primary);
+  outline-offset: 2px;
+}
+
+.answer-option__letter {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  border: 1.5px solid var(--color-border-default);
+  background: var(--color-bg-card);
+  font-size: 0.875rem;
+  font-weight: bold;
+  color: var(--color-text-secondary);
+  flex-shrink: 0;
+  transition: border-color 120ms ease, background-color 120ms ease, color 120ms ease;
+}
+
+.answer-option__text {
+  flex: 1;
+  font-size: 1rem;
+  color: var(--color-text-primary);
+}
+
+/* Unselected state (default) */
+.answer-option--unselected:hover {
+  border-color: var(--color-border-focus);
+}
+
+.answer-option--unselected:hover .answer-option__letter {
+  border-color: var(--color-accent-primary);
+  color: var(--color-accent-primary);
+}
+
+/* Selected state (pre-submit) */
+.answer-option--selected {
+  border-color: var(--color-accent-primary);
+  border-width: 2px;
+  background: rgba(91, 79, 207, 0.05);
+}
+
+.answer-option--selected .answer-option__letter {
+  border-color: var(--color-accent-primary);
+  background: var(--color-accent-primary);
+  color: var(--color-text-on-accent);
+}
+
+/* Correct state (post-submit) */
+.answer-option--correct {
+  border-color: var(--color-success);
+  border-width: 2px;
+  background: var(--color-success-bg);
+}
+
+.answer-option--correct .answer-option__letter {
+  border-color: var(--color-success);
+  background: var(--color-success);
+  color: var(--color-text-on-accent);
+}
+
+/* Incorrect state (post-submit) */
+.answer-option--incorrect {
+  border-color: var(--color-error);
+  border-width: 2px;
+  background: var(--color-error-bg);
+}
+
+.answer-option--incorrect .answer-option__letter {
+  border-color: var(--color-error);
+  background: var(--color-error);
+  color: var(--color-text-on-accent);
+}
+
+/* Disabled state */
+.answer-option:disabled {
+  cursor: not-allowed;
+  opacity: 0.6;
+}
