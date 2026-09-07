@@ -80,16 +80,16 @@ export default function LibraryPage() {
   }
 
   return (
-    <main className="library-page pl-10 pr-10 ">
-
-      {/* ── Rich decorative background ── */}
-      <div className="lib-bg" aria-hidden="true">
- <div className="absolute -top-20 -left-20 w-48 h-48 bg-yellow-300 rounded-full opacity-25 blur-3xl"></div>
+    <main className="relative   library-page pl-10 pr-10 ">
+<div className="absolute -top-20 -left-20 w-48 h-48 bg-yellow-300 rounded-full opacity-25 blur-3xl"></div>
       <div className="absolute -bottom-32 -right-32 w-64 h-64 bg-purple-700 rounded-full opacity-20 blur-3xl"></div>
       <div className=" pointer-events-none absolute -left-24 -top-24 h-72 w-72 rounded-full bg-yellow-300/30 blur-3xl "/>
       <div className=" pointer-events-none absolute -right-24 -top-24 h-72 w-72 rounded-full bg-yellow-300/30 blur-3xl "/>
-      <div className=" pointer-events-none absolute -right-32 top-1/3 h-96 w-96 rounded-full bg-purple-800/35 blur-3xl "/>
-        
+
+       
+      {/* ── Rich decorative background ── */}
+      <div className="lib-bg" aria-hidden="true">
+  
         {/* legacy shapes kept for CSS compat */}
         <div className="library-page__shape library-page__shape--yellow" />
         <div className="library-page__shape library-page__shape--purple" />

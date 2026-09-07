@@ -595,10 +595,15 @@ async function generateMoreQuestions(
       })
     } catch (err) {
       console.error(
-        'More practice question generation failed:',
-        err
-      )
-
+    'More practice question generation failed:',
+    {
+      message: err?.message,
+      name: err?.name,
+      status: err?.response?.status,
+      responseData: err?.response?.data,
+      stack: err?.stack,
+    }
+  )
       /**
        * No additional controller retry.
        */

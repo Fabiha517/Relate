@@ -1,50 +1,520 @@
 .practice-session-page {
-  padding: var(--space-8, 32px) var(--space-4, 16px);
-  max-width: 100%;
+  position: relative;
+  isolation: isolate;
+
+  width: 100%;
+  min-height: 100%;
+
+
+
+  background: #f7f0e3;
+  color: #14213d;
+
+  overflow: hidden;
 }
 
-.practice-session-loading {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  gap: var(--space-4, 16px);
-  min-height: 400px;
+/* =========================================================
+   OPEN CANVAS DECORATION
+   ========================================================= */
+
+.practice-canvas-decor {
+  position: absolute;
+  inset: 0;
+
+  pointer-events: none;
+  overflow: hidden;
+
+  z-index: 0;
 }
+
+/* =========================================================
+   SESSION CONTAINER
+   IMPORTANT:
+   NO BACKGROUND
+   NO BORDER
+   NO SHADOW
+   NO CARD
+   ========================================================= */
 
 .practice-session-container {
-  max-width: 800px;
+  position: relative;
+  z-index: 5;
+
+  width: 100%;
+  max-width: 1100px;
+
   margin: 0 auto;
 }
 
+.practice-session-content {
+  position: relative;
+  width: 100%;
+}
+
+/* =========================================================
+   HEADER
+   ========================================================= */
+
 .practice-session-header {
-  margin-bottom: var(--space-8, 32px);
+  position: relative;
+  margin-bottom: 34px;
+  padding-top: 4px;
+}
+
+.practice-header-kicker {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+
+  margin-bottom: 14px;
+
+  font-size: 10px;
+  font-weight: 900;
+
+  text-transform: uppercase;
+  letter-spacing: 0.16em;
+}
+
+.practice-header-kicker > span:first-child {
+  display: inline-flex;
+  align-items: center;
+
+  padding: 7px 14px;
+
+  border: 2px solid #5424c7;
+  border-radius: 999px;
+
+  background: #eee7ff;
+  color: #5424c7;
+
+  transform: rotate(-2deg);
+}
+
+.practice-header-rule {
+  width: 34px;
+  height: 2px;
+
+  background: #d2c9bd;
+}
+
+.practice-header-note {
+  color: #918b96;
 }
 
 .practice-session-header h1 {
   margin: 0;
-  font-size: 1.75rem;
-  font-weight: 700;
-  color: var(--color-text-primary, #1a1a2e);
+
+  max-width: 900px;
+
+  font-size: clamp(2rem, 4vw, 3.4rem);
+  line-height: 1.02;
+
+  font-weight: 950;
+
+  letter-spacing: -0.045em;
+
+  color: #14213d;
 }
 
 .practice-session-world {
-  margin: var(--space-2, 8px) 0 0 0;
-  font-size: 0.875rem;
-  color: var(--color-text-secondary, #6b6b8a);
+  margin: 12px 0 0;
+
+  font-size: 0.95rem;
+  font-weight: 600;
+
+  color: #777381;
 }
 
-.practice-session-content {
-  width: 100%;
+.practice-header-underline {
+  display: block;
+
+  width: 190px;
+  height: 15px;
+
+  margin-top: 7px;
 }
 
-/* Mobile */
+/* =========================================================
+   LOADING
+   ========================================================= */
+
+.practice-session-loading {
+  position: relative;
+  z-index: 5;
+
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+
+  gap: 16px;
+
+  min-height: 360px;
+
+  color: #6f6875;
+
+  text-align: center;
+}
+
+.practice-session-loading p {
+  margin: 0;
+
+  font-size: 0.9rem;
+  font-weight: 800;
+
+  color: #777381;
+}
+
+/* =========================================================
+   FLOATING CANVAS OBJECTS
+   ========================================================= */
+
+.canvas-ring {
+  position: absolute;
+
+  border-radius: 50%;
+
+  pointer-events: none;
+}
+
+.canvas-ring-one {
+  top: 42px;
+  left: 3%;
+
+  width: 108px;
+  height: 108px;
+
+  border: 1.5px dashed #5424c7;
+
+  opacity: 0.32;
+
+  animation: canvasFloat 7s ease-in-out infinite;
+}
+
+.canvas-ring-one::after {
+  content: '';
+
+  position: absolute;
+
+  inset: 16px;
+
+  border: 1.5px solid #e47b62;
+  border-radius: 50%;
+}
+
+.canvas-ring-two {
+  top: 90px;
+  right: 4%;
+
+  width: 92px;
+  height: 92px;
+
+  border: 2px solid #4e9ea0;
+
+  opacity: 0.22;
+
+  animation: canvasFloatReverse 9s ease-in-out infinite;
+}
+
+.canvas-ring-two::before {
+  content: '';
+
+  position: absolute;
+
+  inset: 14px;
+
+  border: 1px dashed #5424c7;
+  border-radius: 50%;
+}
+
+.canvas-dot {
+  position: absolute;
+
+  width: 9px;
+  height: 9px;
+
+  border-radius: 50%;
+}
+
+.canvas-dot-one {
+  top: 22%;
+  left: 12%;
+
+  background: #e47b62;
+
+  opacity: 0.6;
+}
+
+.canvas-dot-two {
+  top: 31%;
+  right: 17%;
+
+  background: #4e9ea0;
+
+  opacity: 0.65;
+}
+
+.canvas-dot-three {
+  top: 8%;
+  right: 25%;
+
+  width: 7px;
+  height: 7px;
+
+  background: #ffd65a;
+
+  opacity: 0.8;
+}
+
+.canvas-dot-four {
+  bottom: 18%;
+  left: 7%;
+
+  width: 8px;
+  height: 8px;
+
+  background: #5424c7;
+
+  opacity: 0.4;
+}
+
+.canvas-star {
+  position: absolute;
+
+  font-size: 28px;
+  line-height: 1;
+
+  color: #5424c7;
+
+  opacity: 0.4;
+
+  animation: canvasTwinkle 4s ease-in-out infinite;
+}
+
+.canvas-star-one {
+  top: 9%;
+  left: 46%;
+}
+
+.canvas-star-two {
+  top: 28%;
+  right: 8%;
+
+  font-size: 20px;
+
+  color: #e47b62;
+
+  animation-delay: 1s;
+}
+
+.canvas-plus {
+  position: absolute;
+
+  font-size: 24px;
+  font-weight: 300;
+
+  color: #f0a23a;
+
+  opacity: 0.55;
+}
+
+.canvas-plus-one {
+  top: 34%;
+  left: 4%;
+}
+
+.canvas-plus-two {
+  top: 47%;
+  right: 6%;
+
+  color: #5424c7;
+}
+
+.canvas-triangle {
+  position: absolute;
+
+  top: 40%;
+  left: 8%;
+
+  font-size: 40px;
+
+  font-weight: 300;
+
+  color: #4e9ea0;
+
+  opacity: 0.4;
+
+  transform: rotate(12deg);
+}
+
+.canvas-zigzag {
+  position: absolute;
+
+  top: 15%;
+  right: 10%;
+
+  width: 105px;
+  height: 42px;
+
+  opacity: 0.5;
+
+  transform: rotate(-7deg);
+}
+
+.canvas-zigzag::before {
+  content: '';
+
+  position: absolute;
+
+  inset: 0;
+
+  border-top: 3px solid #e47b62;
+
+  border-radius: 50%;
+
+  transform: skewX(-25deg);
+}
+
+.canvas-constellation {
+  position: absolute;
+
+  top: 52px;
+  left: 50%;
+
+  width: 220px;
+  height: 120px;
+
+  transform: translateX(-50%);
+
+  opacity: 0.38;
+}
+
+/* =========================================================
+   ANIMATION
+   ========================================================= */
+
+@keyframes canvasFloat {
+  0%,
+  100% {
+    transform: translateY(0) rotate(0deg);
+  }
+
+  50% {
+    transform: translateY(-7px) rotate(3deg);
+  }
+}
+
+@keyframes canvasFloatReverse {
+  0%,
+  100% {
+    transform: translateY(0) rotate(0deg);
+  }
+
+  50% {
+    transform: translateY(8px) rotate(-4deg);
+  }
+}
+
+@keyframes canvasTwinkle {
+  0%,
+  100% {
+    transform: scale(1);
+    opacity: 0.3;
+  }
+
+  50% {
+    transform: scale(1.15);
+    opacity: 0.65;
+  }
+}
+
+/* =========================================================
+   MOBILE
+   ========================================================= */
+
 @media (max-width: 767px) {
   .practice-session-page {
-    padding: var(--space-6, 24px) var(--space-4, 16px);
+    padding: 20px 16px 40px;
+  }
+
+  .practice-session-header {
+    margin-bottom: 28px;
+  }
+
+  .practice-header-kicker {
+    gap: 8px;
+  }
+
+  .practice-header-note {
+    display: none;
+  }
+
+  .practice-header-rule {
+    width: 24px;
   }
 
   .practice-session-header h1 {
-    font-size: 1.5rem;
+    font-size: clamp(1.9rem, 9vw, 2.5rem);
+  }
+
+  .practice-session-world {
+    margin-top: 9px;
+  }
+
+  .practice-header-underline {
+    width: 145px;
+  }
+
+  .canvas-ring-one {
+    top: 95px;
+    left: -35px;
+  }
+
+  .canvas-ring-two {
+    top: 130px;
+    right: -28px;
+  }
+
+  .canvas-constellation {
+    top: 42px;
+    left: 68%;
+
+    width: 150px;
+    height: 90px;
+
+    opacity: 0.25;
+  }
+
+  .canvas-triangle {
+    left: 2%;
+    top: 42%;
+  }
+
+  .canvas-zigzag {
+    right: -10px;
+  }
+}
+
+/* =========================================================
+   TABLET
+   ========================================================= */
+
+@media (min-width: 768px) and (max-width: 1023px) {
+  .practice-session-page {
+    padding: 26px 24px 48px;
+  }
+
+  .practice-session-container {
+    max-width: 900px;
+  }
+}
+
+/* =========================================================
+   DESKTOP
+   ========================================================= */
+
+@media (min-width: 1024px) {
+  .practice-session-container {
+    max-width: 1100px;
   }
 }

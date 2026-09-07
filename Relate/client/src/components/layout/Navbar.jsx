@@ -1,7 +1,9 @@
-﻿
-import { useState } from 'react'
+﻿  import { useState } from 'react'
+
 import { Link, useNavigate } from 'react-router-dom'
+
 import { useAuth } from '../../hooks/useAuth'
+
 import ConfirmModal from '../ui/ConfirmModal'
 
 // 👇 Keep your existing logo import here
@@ -10,7 +12,7 @@ import logo from '../../../dist/assets/logo.svg'
 /**
  * Navbar - Top navigation bar for the application.
  *
- * For authenticated users: Shows Library, Practice links, and Profile avatar
+ * For authenticated users: Shows Home, Library, Practice links, and Profile avatar
  * For guests: Shows Login and Register links
  *
  * Uses useAuth() to determine user state
@@ -59,7 +61,7 @@ export function Navbar() {
           <Link
             to="/"
             className="
-              flex items-center 
+              flex items-center
               rounded-xl px-2 py-1
               transition-all duration-200
               hover:-rotate-1 hover:scale-[1.03]
@@ -81,6 +83,24 @@ export function Navbar() {
             {user ? (
               /* ================= AUTHENTICATED USER ================= */
               <div className="flex items-center gap-1.5">
+
+                {/* Home */}
+                <Link
+                  to="/"
+                  className="
+                    rounded-xl px-4 py-2.5
+                    text-sm font-bold
+                    text-[#F5F0E8]
+                    transition-all duration-200
+                    hover:-translate-y-0.5
+                    hover:bg-[#e7811b]
+                    hover:text-[#202331]
+                  "
+                >
+                  Home
+                </Link>
+
+                {/* Library */}
                 <Link
                   to="/library"
                   className="
@@ -96,6 +116,7 @@ export function Navbar() {
                   My Library
                 </Link>
 
+                {/* Practice */}
                 <Link
                   to="/practice"
                   className="
@@ -133,6 +154,7 @@ export function Navbar() {
                   {getUserInitial()}
                 </Link>
 
+                {/* Logout */}
                 <button
                   onClick={() => setShowLogoutModal(true)}
                   className="
