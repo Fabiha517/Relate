@@ -417,9 +417,9 @@ export default function HomePage() {
                       text-[#526477]
                     "
                   >
-                    You get 1 free analogy. Create an account
+                    You get 1 free analogy. Create an account 
                     <br className="hidden sm:block" />
-                    to save and practice!
+                     {' '}to save and practice!
                   </p>
                 )}
               </section>
