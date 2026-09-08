@@ -264,6 +264,10 @@ export default function ProfilePage() {
         aria-hidden="true"
         className="pointer-events-none absolute bottom-[-12rem] left-[30%] h-96 w-96 rounded-full bg-[#4E9EA0]/15 blur-3xl"
       />
+ <div className="absolute -top-20 -left-20 w-48 h-48 bg-yellow-300 rounded-full opacity-25 blur-3xl"></div>
+        <div className="absolute -bottom-32 -right-32 w-64 h-64 bg-purple-700 rounded-full opacity-20 blur-3xl"></div>
+        <div className=" pointer-events-none absolute -left-24 -top-24 h-72 w-72 rounded-full bg-yellow-300/30 blur-3xl " />
+        <div className=" pointer-events-none absolute -right-24 -top-24 h-72 w-72 rounded-full bg-yellow-300/30 blur-3xl " />
 
       {/* =====================================================
           FLOATING CANVAS ELEMENTS

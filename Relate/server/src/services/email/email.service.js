@@ -1,29 +1,6 @@
 'use strict';
 
-const nodemailer = require('nodemailer');
-const env = require('../../config/env');
-
-let transporter = null;
-
-/* =========================================================
-   SMTP TRANSPORT
-========================================================= */
-
-function getTransporter() {
-  if (!transporter) {
-    transporter = nodemailer.createTransport({
-      host: process.env.EMAIL_HOST,
-      port: parseInt(process.env.EMAIL_PORT || 587, 10),
-      secure: process.env.EMAIL_SECURE === 'true',
-      auth: {
-        user: process.env.EMAIL_USER,
-        pass: process.env.EMAIL_PASS,
-      },
-    });
-  }
-
-  return transporter;
-}
+const AGENTMAIL_API_URL = 'https://api.agentmail.to/v0';
 
 /* =========================================================
    RELATE EMAIL — HTML
@@ -83,7 +60,6 @@ function composeResetEmailHtml(resetUrl) {
   "
 >
 
-  <!-- OUTER CANVAS -->
   <table
     width="100%"
     cellpadding="0"
@@ -98,7 +74,6 @@ function composeResetEmailHtml(resetUrl) {
         style="padding:42px 18px;"
       >
 
-        <!-- MAIN CARD -->
         <table
           width="600"
           cellpadding="0"
@@ -116,9 +91,7 @@ function composeResetEmailHtml(resetUrl) {
           "
         >
 
-          <!-- =================================================
-               TOP ART AREA
-          ================================================== -->
+          <!-- TOP ART AREA -->
 
           <tr>
             <td
@@ -137,7 +110,6 @@ function composeResetEmailHtml(resetUrl) {
               >
                 <tr>
 
-                  <!-- LOGO -->
                   <td
                     valign="middle"
                     style="
@@ -151,7 +123,6 @@ function composeResetEmailHtml(resetUrl) {
                     RELATE<span style="color:#ffd65a;">.</span>
                   </td>
 
-                  <!-- DECORATIVE SHAPES -->
                   <td
                     align="right"
                     valign="middle"
@@ -215,8 +186,6 @@ function composeResetEmailHtml(resetUrl) {
                 </tr>
               </table>
 
-              <!-- LITTLE LABEL -->
-
               <div
                 style="
                   margin-top:24px;
@@ -235,9 +204,7 @@ function composeResetEmailHtml(resetUrl) {
           </tr>
 
 
-          <!-- =================================================
-               MAIN CONTENT
-          ================================================== -->
+          <!-- MAIN CONTENT -->
 
           <tr>
             <td
@@ -246,8 +213,6 @@ function composeResetEmailHtml(resetUrl) {
                 padding:48px 48px 42px;
               "
             >
-
-              <!-- EYEBROW -->
 
               <div
                 style="
@@ -267,8 +232,6 @@ function composeResetEmailHtml(resetUrl) {
               </div>
 
 
-              <!-- HEADLINE -->
-
               <div
                 class="headline"
                 style="
@@ -286,8 +249,6 @@ function composeResetEmailHtml(resetUrl) {
               </div>
 
 
-              <!-- BODY -->
-
               <div
                 class="intro"
                 style="
@@ -304,16 +265,12 @@ function composeResetEmailHtml(resetUrl) {
               </div>
 
 
-              <!-- HAND-DRAWN-ISH NOTE -->
-
               <table
                 width="100%"
                 cellpadding="0"
                 cellspacing="0"
                 border="0"
-                style="
-                  margin-bottom:30px;
-                "
+                style="margin-bottom:30px;"
               >
                 <tr>
                   <td
@@ -340,8 +297,6 @@ function composeResetEmailHtml(resetUrl) {
                 </tr>
               </table>
 
-
-              <!-- CTA -->
 
               <table
                 cellpadding="0"
@@ -381,8 +336,6 @@ function composeResetEmailHtml(resetUrl) {
               </table>
 
 
-              <!-- FALLBACK URL -->
-
               <div
                 style="
                   font-size:12px;
@@ -414,9 +367,7 @@ function composeResetEmailHtml(resetUrl) {
           </tr>
 
 
-          <!-- =================================================
-               BOTTOM VISUAL STRIP
-          ================================================== -->
+          <!-- BOTTOM VISUAL STRIP -->
 
           <tr>
             <td
@@ -476,9 +427,7 @@ function composeResetEmailHtml(resetUrl) {
         </table>
 
 
-        <!-- =================================================
-             FOOTER
-        ================================================== -->
+        <!-- FOOTER -->
 
         <table
           width="600"
@@ -561,34 +510,95 @@ If you didn't request this password reset, you can safely ignore this email.
 
 
 /* =========================================================
+   AGENTMAIL SEND
+========================================================= */
+
+async function sendViaAgentMail({
+  to,
+  subject,
+  text,
+  html,
+}) {
+  const apiKey = process.env.AGENTMAIL_API_KEY;
+  const inboxId = process.env.AGENTMAIL_INBOX_ID;
+
+  if (!apiKey || !inboxId) {
+    throw new Error(
+      'AgentMail configuration is missing'
+    );
+  }
+
+  const response = await fetch(
+    `${AGENTMAIL_API_URL}/inboxes/${encodeURIComponent(
+      inboxId
+    )}/messages/send`,
+    {
+      method: 'POST',
+
+      headers: {
+        Authorization: `Bearer ${apiKey}`,
+        'Content-Type': 'application/json',
+      },
+
+      body: JSON.stringify({
+        to,
+        subject,
+        text,
+        html,
+      }),
+    }
+  );
+
+  if (!response.ok) {
+    let errorMessage =
+      `AgentMail request failed with status ${response.status}`;
+
+    try {
+      const errorBody = await response.json();
+
+      if (errorBody?.message) {
+        errorMessage += `: ${errorBody.message}`;
+      } else if (errorBody?.detail) {
+        errorMessage += `: ${errorBody.detail}`;
+      }
+    } catch {
+      // Ignore invalid/non-JSON error response.
+    }
+
+    throw new Error(errorMessage);
+  }
+
+  return response.json();
+}
+
+
+/* =========================================================
    SEND PASSWORD RESET EMAIL
 ========================================================= */
 
-async function sendPasswordResetEmail({ to, resetUrl }) {
+async function sendPasswordResetEmail({
+  to,
+  resetUrl,
+}) {
   if (!to || !resetUrl) {
-    throw new Error('Email recipient and reset URL are required');
+    throw new Error(
+      'Email recipient and reset URL are required'
+    );
   }
 
   try {
-    const transporter = getTransporter();
-
-    const mailOptions = {
-      from: process.env.EMAIL_FROM || 'noreply@relate.app',
-
+    const result = await sendViaAgentMail({
       to,
-
       subject: 'Reset Your Relate Password',
-
       text: composeResetEmailText(resetUrl),
-
       html: composeResetEmailHtml(resetUrl),
-    };
-
-    await transporter.sendMail(mailOptions);
+    });
 
     console.log(
       `[EmailService] Password reset email sent to: ${to}`
     );
+
+    return result;
   } catch (error) {
     console.error(
       `[EmailService] Failed to send password reset email to ${to}: ${error.message}`

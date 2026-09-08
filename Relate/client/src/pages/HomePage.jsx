@@ -1003,7 +1003,7 @@ export default function HomePage() {
 
                 <button
                   type="button"
-                  onClick={() => handleWorldCardClick('restaurant')}
+            
                   disabled={loading}
                   className="
                     relate-card
@@ -1108,7 +1108,7 @@ export default function HomePage() {
 
                 <button
                   type="button"
-                  onClick={() => handleWorldCardClick('sports')}
+             
                   disabled={loading}
                   className="
                     relate-card
@@ -1212,7 +1212,7 @@ export default function HomePage() {
 
                 <button
                   type="button"
-                  onClick={() => handleWorldCardClick('movies')}
+                 
                   disabled={loading}
                   className="
                     relate-card
