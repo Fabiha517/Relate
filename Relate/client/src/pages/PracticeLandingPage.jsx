@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react'
 
 import { useAuth } from '../hooks/useAuth'
-
+import ConfirmModal from '../components/ui/ConfirmModal'
 import * as libraryApi from '../api/library.api'
 import * as practiceApi from '../api/practice.api'
 
@@ -15,7 +15,8 @@ export default function PracticeLandingPage() {
 
   const [analogies, setAnalogies] = useState([])
   const [practiceHistory, setPracticeHistory] = useState([])
-
+const [sessionToDelete, setSessionToDelete] = useState(null)
+const [isDeletingSession, setIsDeletingSession] = useState(false)
   const [loading, setLoading] = useState(true)
   const [historyLoading, setHistoryLoading] = useState(true)
 
@@ -84,7 +85,66 @@ export default function PracticeLandingPage() {
     window.location.href =
       `/practice/${session.analogyId}/session/${session.sessionId}`
   }
+function handleDeleteSession(session) {
+  if (!session?.sessionId) {
+    return
+  }
 
+  setSessionToDelete(session)
+}
+
+async function handleConfirmDeleteSession() {
+  if (!sessionToDelete?.sessionId) {
+    return
+  }
+
+  const deletedSessionId = sessionToDelete.sessionId
+  const sessionBeingDeleted = sessionToDelete
+
+  // Remove immediately from UI
+  setPracticeHistory((prev) =>
+    prev.filter(
+      (session) =>
+        session.sessionId !== deletedSessionId
+    )
+  )
+
+  setSessionToDelete(null)
+  setIsDeletingSession(true)
+
+  try {
+    await practiceApi.deletePracticeSession(
+      deletedSessionId
+    )
+  } catch (err) {
+    console.error(
+      'Failed to delete practice session:',
+      err
+    )
+
+    // Put it back if server deletion failed
+    setPracticeHistory((prev) => {
+      if (
+        prev.some(
+          (session) =>
+            session.sessionId === deletedSessionId
+        )
+      ) {
+        return prev
+      }
+
+      return [...prev, sessionBeingDeleted]
+    })
+
+    setHistoryError(
+      err.response?.data?.error?.message ||
+      err.message ||
+      'Failed to delete practice session. Please try again.'
+    )
+  } finally {
+    setIsDeletingSession(false)
+  }
+}
   return (
     <div className="relative min-h-full w-full overflow-hidden bg-[#F7F0E3] text-[#14213D]">
 <div className="absolute -top-20 -left-20 w-48 h-48 bg-yellow-300 rounded-full opacity-25 blur-3xl"></div>
@@ -92,7 +152,7 @@ export default function PracticeLandingPage() {
       <div className=" pointer-events-none absolute -left-24 -top-24 h-72 w-72 rounded-full bg-yellow-300/30 blur-3xl "/>
       <div className=" pointer-events-none absolute -right-24 -top-24 h-72 w-72 rounded-full bg-yellow-300/30 blur-3xl "/>
 
-        
+
       {/* =========================================================
           ONE SINGLE VISUAL CANVAS
       ========================================================= */}
@@ -530,6 +590,7 @@ export default function PracticeLandingPage() {
           <PracticeLanding
             sessions={practiceHistory}
             onReviewSession={handleReviewSession}
+              onDeleteSession={handleDeleteSession}
           />
 
         </main>
@@ -571,7 +632,28 @@ export default function PracticeLandingPage() {
         </div>
       )}
 
-
+<ConfirmModal
+  isOpen={Boolean(sessionToDelete)}
+  title="Delete practice session?"
+  message={
+    sessionToDelete
+      ? `This will permanently remove your practice session for "${sessionToDelete.analogyTitle || 'this analogy'}".`
+      : ''
+  }
+  confirmLabel={
+    isDeletingSession
+      ? 'Deleting...'
+      : 'Delete session'
+  }
+  cancelLabel="Keep session"
+  confirmVariant="danger"
+  onConfirm={handleConfirmDeleteSession}
+  onCancel={() => {
+    if (!isDeletingSession) {
+      setSessionToDelete(null)
+    }
+  }}
+/>
       {/* =========================================================
           ANIMATIONS
       ========================================================= */}

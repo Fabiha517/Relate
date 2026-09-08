@@ -54,9 +54,7 @@ async function callWithRetry({ prompt, timeoutMs, maxAttempts, validate }) {
     try {
       const raw = await provider.call(prompt, timeoutMs)
 
-      console.log('=== RAW AI RESPONSE ===')
-      console.log(raw)
-
+     
       let parsed
 
       try {
@@ -80,11 +78,7 @@ async function callWithRetry({ prompt, timeoutMs, maxAttempts, validate }) {
       console.error(
         `=== AI ATTEMPT ${attempt}/${maxAttempts} FAILED ===`
       )
-      console.error('error name:', err.name)
-      console.error('error code:', err.code)
-      console.error('error status:', err.status)
-      console.error('error message:', err.message)
-
+     
       /*
        * IMPORTANT:
        * A daily token quota cannot be fixed by retrying.
@@ -119,9 +113,7 @@ async function callWithRetry({ prompt, timeoutMs, maxAttempts, validate }) {
     }
   }
 
-  console.error('=== AI ALL ATTEMPTS FAILED ===')
-  console.error('last error:', lastError?.message)
-
+ 
   const serviceError = new AIServiceError(
     lastError?.message || 'AI service request failed'
   )

@@ -1,38 +1,31 @@
 import { Navigate, useLocation } from 'react-router-dom'
+
 import { useAuth } from '../../hooks/useAuth'
 
 /**
- * LoadingSpinner - Simple loading indicator.
- */
-function LoadingSpinner() {
-  return (
-    <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100vh' }}>
-      <div>Loading...</div>
-    </div>
-  )
-}
-
-/**
- * ProtectedRoute - Wrapper for routes that require authentication.
+ * ProtectedRoute
  *
- * - Shows LoadingSpinner while loading
- * - Redirects to /login?from=<currentPath> if user is null
- * - Renders the protected component if user is authenticated
- *
- * @param {Object} props
- * @param {React.ReactNode} props.children - Component to render if authenticated
+ * Prevents unauthenticated users from accessing protected pages.
+ * Waits for the initial authentication check to finish before
+ * deciding whether the user is authenticated.
  */
 export function ProtectedRoute({ children }) {
-  const { user, loading } = useAuth()
+  const { user, initializing } = useAuth()
   const location = useLocation()
 
-  if (loading) {
-    return <LoadingSpinner />
+  // Wait only for the initial /auth/me check.
+  if (initializing) {
+    return null
   }
 
-  if (user === null) {
-    const from = location.pathname + location.search
-    return <Navigate to={`/login?from=${encodeURIComponent(from)}`} replace />
+  // Once initialization is complete, redirect unauthenticated users.
+  if (!user) {
+    return (
+      <Navigate
+        to={`/login?from=${encodeURIComponent(location.pathname + location.search)}`}
+        replace
+      />
+    )
   }
 
   return children

@@ -90,8 +90,9 @@ export async function requestPasswordReset({ email }) {
 export async function resetPassword({ token, password }) {
   const response = await authClient.post('/auth/reset-password', {
     token,
-    password,
+    newPassword: password,
   })
+
   return response.data
 }
 

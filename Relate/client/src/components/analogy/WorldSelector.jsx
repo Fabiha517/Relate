@@ -3,8 +3,7 @@
 
 import { useEffect, useState } from 'react'
 import * as worldsApi from '../../api/worlds.api'
-console.log('Lottie:', Lottie)
-console.log('typeof Lottie:', typeof Lottie)
+
 import {Lottie} from 'lottie-react'
 
 import restaurantAnimation from '../../assets/animations/restaurant.json'

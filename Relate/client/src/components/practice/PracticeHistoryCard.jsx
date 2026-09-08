@@ -2,6 +2,7 @@
   session,
   index = 0,
   onClick,
+  onDelete,
 }) {
   const score = Number(session?.score ?? 0)
 
@@ -19,10 +20,17 @@
         ? 'Getting there'
         : 'Worth another look'
 
+  function handleDelete(e) {
+    e.stopPropagation()
+    onDelete?.(session)
+  }
+
+  function handleReview() {
+    onClick?.()
+  }
+
   return (
-    <button
-      type="button"
-      onClick={onClick}
+    <div
       className="
         group
         relative
@@ -39,13 +47,7 @@
         hover:rotate-[0.3deg]
         hover:border-[#5424C7]
         hover:shadow-[6px_8px_0_#5424C7]
-        focus:outline-none
-        focus:ring-2
-        focus:ring-[#5424C7]
-        focus:ring-offset-4
-        focus:ring-offset-[#F7F0E3]
         sm:px-7 sm:py-7
-        hover:cursor-pointer
       "
     >
 
@@ -58,7 +60,7 @@
         className="pointer-events-none absolute inset-0 overflow-hidden"
       >
 
-        {/* colored organic shape */}
+        {/* organic shape */}
         <div
           className="
             absolute
@@ -82,7 +84,7 @@
           }}
         />
 
-        {/* little dots */}
+        {/* dots */}
         <svg
           className="absolute bottom-4 right-5 h-14 w-20 opacity-40"
           viewBox="0 0 80 50"
@@ -148,7 +150,6 @@
 
         <div className="relative flex h-[86px] w-[86px] shrink-0 items-center justify-center">
 
-          {/* SVG ring */}
           <svg
             className="absolute inset-0 h-full w-full -rotate-90"
             viewBox="0 0 100 100"
@@ -271,7 +272,7 @@
         </div>
 
         {/* ===================================================
-            REVIEW ACTION
+            ACTIONS
         =================================================== */}
 
         <div
@@ -279,7 +280,7 @@
             flex
             shrink-0
             items-center
-            gap-3
+            gap-2
             border-t
             border-[#ECE6DC]
             pt-4
@@ -287,19 +288,13 @@
             sm:pt-0
           "
         >
-          <span
-            className="
-              text-xs
-              font-bold
-              text-[#8A8490]
-              transition-colors
-              group-hover:text-[#5424C7]
-            "
-          >
-            Review
-          </span>
 
-          <span
+          {/* DELETE */}
+
+          <button
+            type="button"
+            onClick={handleDelete}
+            aria-label={`Delete session ${index + 1}`}
             className="
               flex
               h-9
@@ -308,21 +303,106 @@
               justify-center
               rounded-full
               border-2
-              border-[#D8D0C2]
-              bg-[#FFFDF7]
-              text-lg
-              text-[#7E7785]
+              border-[#E47B62]/40
+              bg-[#FFF0ED]
+              text-[#D85C4A]
               transition-all
-              duration-300
-              group-hover:border-[#5424C7]
-              group-hover:bg-[#5424C7]
-              group-hover:text-white
+              duration-200
+              hover:-translate-y-0.5
+              hover:border-[#E47B62]
+              hover:bg-[#E47B62]
+              hover:text-white
+              hover:shadow-[2px_2px_0_#14213D]
+              active:translate-y-0
+              active:shadow-none
+            "
+            title="Delete session"
+          >
+            <svg
+              aria-hidden="true"
+              className="h-4 w-4"
+              viewBox="0 0 24 24"
+              fill="none"
+            >
+              <path
+                d="M4 7H20"
+                stroke="currentColor"
+                strokeWidth="2"
+                strokeLinecap="round"
+              />
+
+              <path
+                d="M9 7V4H15V7"
+                stroke="currentColor"
+                strokeWidth="2"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              />
+
+              <path
+                d="M7 7L8 20H16L17 7"
+                stroke="currentColor"
+                strokeWidth="2"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              />
+
+              <path
+                d="M10 11V16M14 11V16"
+                stroke="currentColor"
+                strokeWidth="2"
+                strokeLinecap="round"
+              />
+            </svg>
+          </button>
+
+          {/* REVIEW */}
+
+          <button
+            type="button"
+            onClick={handleReview}
+            className="
+              flex
+              items-center
+              gap-2
+              rounded-full
+              px-2
+              py-1
+              text-xs
+              font-bold
+              text-[#8A8490]
+              transition-colors
+              hover:text-[#5424C7]
             "
           >
-            →
-          </span>
+            <span>Review</span>
+
+            <span
+              className="
+                flex
+                h-9
+                w-9
+                items-center
+                justify-center
+                rounded-full
+                border-2
+                border-[#D8D0C2]
+                bg-[#FFFDF7]
+                text-lg
+                text-[#7E7785]
+                transition-all
+                duration-300
+                hover:border-[#5424C7]
+                hover:bg-[#5424C7]
+                hover:text-white
+              "
+            >
+              →
+            </span>
+          </button>
+
         </div>
       </div>
-    </button>
+    </div>
   )
 }

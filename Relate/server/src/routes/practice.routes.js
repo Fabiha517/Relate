@@ -15,7 +15,7 @@ const {
   validateSavePracticeSession
 } = require('../middleware/validate.middleware');
 
-// â”€â”€ POST /api/practice/questions â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// â”€â”€ POST /api/practice/questions ─────────────────────────────────
 router.post(
   '/questions',
   requireAuth,
@@ -24,7 +24,7 @@ router.post(
   controller.generateQuestions
 );
 
-// â”€â”€ POST /api/practice/questions/more â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// â”€â”€ POST /api/practice/questions/more ─────────────────────────────────
 router.post(
   '/questions/more',
   requireAuth,
@@ -33,7 +33,7 @@ router.post(
   controller.generateMoreQuestions
 );
 
-// â”€â”€ POST /api/practice/evaluate â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// â”€â”€ POST /api/practice/evaluate ─────────────────────────────────
 router.post(
   '/evaluate',
   requireAuth,
@@ -42,22 +42,30 @@ router.post(
   controller.evaluate
 );
 
-// â”€â”€ POST /api/practice/sessions â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+//  ──  POST /api/practice/sessions ─────────────────────────────────
 router.post(
   '/sessions',
   requireAuth,
   validateSavePracticeSession,
   controller.saveSession
 );
+// ── PATCH /api/practice/sessions/:sessionId ─────────────────────────────────
 
-// â”€â”€ GET /api/practice/history â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+router.patch(
+  '/sessions/:sessionId',
+  requireAuth,  
+  
+  validateSavePracticeSession,
+  controller.updateSession
+);
+//  ──  GET /api/practice/history ─────────────────────────────────
 // Must be registered before /:analogyId to avoid path conflicts
 router.get('/history', requireAuth, controller.getHistory);
 
-// â”€â”€ GET /api/practice/sessions/:analogyId â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+//  ──  GET /api/practice/sessions/:analogyId ─────────────────────────────────
 router.get('/sessions/:analogyId', requireAuth, controller.getSessionsForAnalogy);
 
-// â”€â”€ GET /api/practice/sessions/:analogyId/:sessionId â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+//  ──  GET /api/practice/sessions/:analogyId/:sessionId ─────────────────────────────────
 router.get('/sessions/:analogyId/:sessionId', requireAuth, controller.getSessionById);
 
 

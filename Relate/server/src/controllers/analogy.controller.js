@@ -395,19 +395,13 @@ async function modify(req, res) {
 let result;
 
 try {
-  console.log('=== MODIFY AI REQUEST ===');
-  console.log(JSON.stringify(aiRequest, null, 2));
+
 
   result = await aiService.generate(aiRequest);
 
-  console.log('=== MODIFY AI RESULT ===');
-  console.log(JSON.stringify(result, null, 2));
+
 } catch (err) {
-  console.error('=== MODIFY AI ERROR ===');
-  console.error('name:', err.name);
-  console.error('code:', err.code);
-  console.error('message:', err.message);
-  console.error('stack:', err.stack);
+
 
   return res.status(503).json({
     error: {

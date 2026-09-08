@@ -46,7 +46,10 @@ export default function PracticeSessionPage() {
 
   const practice = usePractice()
 
-  const sessionSaveStarted = useRef(false)
+const sessionSaveStarted = useRef(false)
+
+const lastSavedQuestionCount =
+  useRef(0)
 
   /**
    * Stores the promise for the initial load.
@@ -183,20 +186,48 @@ export default function PracticeSessionPage() {
    * Save the session exactly once after reaching
    * the summary.
    */
-  useEffect(() => {
-    if (
-      practice.state === 'summary' &&
-      analogy &&
-      !sessionSaveStarted.current
-    ) {
-      sessionSaveStarted.current = true
-      handleSessionComplete()
-    }
-  }, [
-    practice.state,
-    analogy,
-  ])
+useEffect(() => {
+  if (
+    practice.state !== 'summary' ||
+    !analogy
+  ) {
+    return
+  }
 
+  const questionCount =
+    practice.questions.length
+
+  if (
+    questionCount <=
+    lastSavedQuestionCount.current
+  ) {
+    return
+  }
+
+  if (sessionSaveStarted.current) {
+    return
+  }
+
+  sessionSaveStarted.current = true
+
+  handleSessionComplete()
+    .then(() => {
+      lastSavedQuestionCount.current =
+        questionCount
+    })
+    .catch(() => {
+      // Keep lastSavedQuestionCount unchanged
+      // so the session can be retried.
+    })
+    .finally(() => {
+      sessionSaveStarted.current = false
+    })
+
+}, [
+  practice.state,
+  practice.questions.length,
+  analogy,
+])
   /**
    * Submit answer.
    */
@@ -244,31 +275,39 @@ export default function PracticeSessionPage() {
    *
    * It does not navigate.
    */
-  async function handlePracticeAgain() {
-    if (!analogy) {
-      return
-    }
-
-    sessionSaveStarted.current = false
-    setError(null)
-
-    try {
-      await practice.loadQuestions(
-        analogy
-      )
-    } catch (err) {
-      console.error(
-        'Failed to start a new practice session:',
-        err
-      )
-
-      setError(
-        err.response?.data?.error?.message ||
-        err.message ||
-        'Failed to start a new practice session'
-      )
-    }
+async function handlePracticeAgain() {
+  if (!analogy) {
+    return
   }
+
+  // -------------------------------------------------------
+  // This is a genuinely NEW practice session.
+  // loadQuestions() uses SET_QUESTIONS, which clears
+  // the old sessionId.
+  // -------------------------------------------------------
+
+  sessionSaveStarted.current = false
+  lastSavedQuestionCount.current = 0
+
+  setError(null)
+
+  try {
+    await practice.loadQuestions(
+      analogy
+    )
+  } catch (err) {
+    console.error(
+      'Failed to start a new practice session:',
+      err
+    )
+
+    setError(
+      err.response?.data?.error?.message ||
+      err.message ||
+      'Failed to start a new practice session'
+    )
+  }
+}
 
   /**
    * Generate More Questions.
@@ -276,129 +315,131 @@ export default function PracticeSessionPage() {
    * Exactly ONE /questions/more request.
    */
   async function handleGenerateMoreQuestions() {
-    if (
-      !analogy ||
-      isGeneratingMore
-    ) {
-      return
-    }
-
-    setIsGeneratingMore(true)
-    setError(null)
-
-    try {
-      /**
-       * Tell the backend which questions have
-       * already been shown.
-       */
-      const previousQuestions =
-        practice.questions
-          .map(
-            (question) =>
-              question?.text
-          )
-          .filter(Boolean)
-
-      /**
-       * EXACTLY ONE /more request.
-       */
-      const response =
-        await practiceApi.generateMorePracticeQuestions(
-          {
-            analogyId:
-              analogy._id ||
-              analogy.id,
-
-            concept:
-              analogy.concept,
-
-            analogyWorld:
-              analogy.analogyWorld,
-
-            nodes:
-              analogy.nodes,
-
-            mappings:
-              analogy.mappings,
-
-            relationships:
-              analogy.relationships,
-
-            explanation:
-              analogy.explanation,
-
-            limitations:
-              analogy.limitations,
-
-            previousQuestions,
-          }
-        )
-
-      const newQuestions =
-        Array.isArray(response?.questions)
-          ? response.questions
-          : []
-
-      if (newQuestions.length === 0) {
-        throw new Error(
-          'No new questions were generated.'
-        )
-      }
-
-      /**
-       * These questions are now a completely
-       * new practice run.
-       */
-      sessionSaveStarted.current = false
-
-      /**
-       * This does NOT call the backend.
-       *
-       * It simply replaces the current state.
-       */
-      practice.setQuestions(
-        newQuestions
-      )
-    } catch (err) {
-      console.error(
-        'Failed to generate more questions:',
-        err
-      )
-
-      setError(
-        err.response?.data?.error?.message ||
-        err.message ||
-        'Failed to generate more questions. Please try again.'
-      )
-    } finally {
-      setIsGeneratingMore(false)
-    }
+  if (
+    !analogy ||
+    isGeneratingMore
+  ) {
+    return
   }
 
+  setIsGeneratingMore(true)
+  setError(null)
+
+  try {
+    /**
+     * Tell the backend which questions have
+     * already been shown.
+     */
+    const previousQuestions =
+      practice.questions
+        .map(
+          (question) =>
+            question?.text
+        )
+        .filter(Boolean)
+
+    /**
+     * Exactly ONE /questions/more request.
+     */
+    const response =
+      await practiceApi.generateMorePracticeQuestions(
+        {
+          analogyId:
+            analogy._id ||
+            analogy.id,
+
+          concept:
+            analogy.concept,
+
+          analogyWorld:
+            analogy.analogyWorld,
+
+          nodes:
+            analogy.nodes,
+
+          mappings:
+            analogy.mappings,
+
+          relationships:
+            analogy.relationships,
+
+          explanation:
+            analogy.explanation,
+
+          limitations:
+            analogy.limitations,
+
+          previousQuestions,
+        }
+      )
+
+    const newQuestions =
+      Array.isArray(response?.questions)
+        ? response.questions
+        : []
+
+    if (newQuestions.length === 0) {
+      throw new Error(
+        'No new questions were generated.'
+      )
+    }
+
+    /**
+     * IMPORTANT:
+     *
+     * Do NOT:
+     * - reset sessionSaveStarted
+     * - call loadQuestions()
+     * - call setQuestions()
+     *
+     * Generate More belongs to the EXISTING session.
+     */
+
+    practice.appendQuestions(
+      newQuestions
+    )
+
+  } catch (err) {
+    console.error(
+      'Failed to generate more questions:',
+      err
+    )
+
+    setError(
+      err.response?.data?.error?.message ||
+      err.message ||
+      'Failed to generate more questions. Please try again.'
+    )
+  } finally {
+    setIsGeneratingMore(false)
+  }
+}
   /**
    * Save completed practice session.
    */
-  async function handleSessionComplete() {
-    if (!analogy) {
-      return
-    }
-
-    try {
-      await practice.savePracticeSession(
-        analogy._id ||
-        analogy.id
-      )
-
-      console.log(
-        'Practice session saved successfully'
-      )
-    } catch (err) {
-      console.error(
-        'Failed to save practice session:',
-        err
-      )
-    }
+ async function handleSessionComplete() {
+  if (!analogy) {
+    return
   }
+
+  try {
+    await practice.savePracticeSession(
+      analogy._id ||
+      analogy.id
+    )
+
+    console.log(
+      'Practice session saved successfully'
+    )
+  } catch (err) {
+    console.error(
+      'Failed to save practice session:',
+      err
+    )
+
+    throw err
+  }
+}
 
   /**
    * Initial page loading.

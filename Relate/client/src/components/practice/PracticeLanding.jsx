@@ -3,6 +3,7 @@ import PracticeHistory from './PracticeHistory'
 export default function PracticeLanding({
   sessions = [],
   onReviewSession,
+   onDeleteSession,
 }) {
   return (
     <div className="relative w-full bg-transparent text-[#14213D]">
@@ -231,6 +232,7 @@ export default function PracticeLanding({
         <PracticeHistory
           sessions={sessions}
           onReviewSession={onReviewSession}
+           onDeleteSession={onDeleteSession}
         />
 
       </section>

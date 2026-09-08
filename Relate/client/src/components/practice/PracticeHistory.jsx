@@ -3,32 +3,23 @@
 export default function PracticeHistory({
   sessions = [],
   onReviewSession,
+  onDeleteSession,
 }) {
   if (!sessions || sessions.length === 0) {
     return (
       <div className="relative overflow-hidden py-12 sm:py-20">
-
-        {/* =====================================================
-            EMPTY CANVAS ILLUSTRATION
-        ===================================================== */}
-
         <div className="relative mx-auto max-w-2xl text-center">
 
-          {/* floating objects */}
           <div
             aria-hidden="true"
             className="pointer-events-none absolute inset-0"
           >
-            {/* yellow blob */}
             <div className="absolute left-[5%] top-[15%] h-20 w-20 rounded-[44%_56%_61%_39%] bg-[#FFD65A] opacity-80" />
 
-            {/* teal blob */}
             <div className="absolute right-[5%] top-[20%] h-16 w-16 rounded-[57%_43%_36%_64%] bg-[#8DD8D0]" />
 
-            {/* coral dot */}
             <div className="absolute bottom-[12%] left-[15%] h-5 w-5 rounded-full bg-[#E47B62]" />
 
-            {/* star */}
             <svg
               className="absolute bottom-[14%] right-[16%] h-12 w-12 rotate-12 text-[#5424C7]"
               viewBox="0 0 50 50"
@@ -42,14 +33,12 @@ export default function PracticeHistory({
             </svg>
           </div>
 
-          {/* illustration */}
           <div className="relative mx-auto mb-8 h-40 w-64">
             <svg
               className="absolute inset-0 h-full w-full"
               viewBox="0 0 300 180"
               fill="none"
             >
-              {/* connecting path */}
               <path
                 d="M35 115C78 54 113 137 153 88C190 43 221 105 267 57"
                 stroke="#5424C7"
@@ -58,7 +47,6 @@ export default function PracticeHistory({
                 strokeDasharray="7 8"
               />
 
-              {/* nodes */}
               <circle
                 cx="35"
                 cy="115"
@@ -86,7 +74,6 @@ export default function PracticeHistory({
                 strokeWidth="2"
               />
 
-              {/* little sparks */}
               <path
                 d="M115 35L118 45M110 40L123 40"
                 stroke="#F0A23A"
@@ -122,18 +109,8 @@ export default function PracticeHistory({
   return (
     <div className="relative">
 
-      {/* =====================================================
-          TIMELINE
-          
-          Two independent vertical spines:
-          - left spine for the left column
-          - right spine for the right column
-          
-          This keeps the purple timeline structure intact
-          when the cards are displayed in two columns.
-      ===================================================== */}
+      {/* LEFT TIMELINE */}
 
-      {/* LEFT TIMELINE SPINE */}
       <div
         aria-hidden="true"
         className="
@@ -148,7 +125,8 @@ export default function PracticeHistory({
         "
       />
 
-      {/* RIGHT TIMELINE SPINE */}
+      {/* RIGHT TIMELINE */}
+
       <div
         aria-hidden="true"
         className="
@@ -164,24 +142,9 @@ export default function PracticeHistory({
         "
       />
 
-      {/* =====================================================
-          SESSION GRID
-      ===================================================== */}
-
       <div className="grid grid-cols-1 gap-x-5 gap-y-7 md:grid-cols-2 xl:gap-x-8">
 
         {sessions.map((session, index) => {
-
-          /*
-           * Determine which timeline column this card belongs to.
-           *
-           * Desktop / tablet:
-           *   even indexes -> left timeline
-           *   odd indexes  -> right timeline
-           *
-           * Mobile:
-           *   everything naturally follows the left timeline.
-           */
           const isRightColumn = index % 2 === 1
 
           return (
@@ -189,16 +152,15 @@ export default function PracticeHistory({
               key={`${session.analogyId}-${session.sessionId}`}
               className={`
                 relative
-                ${isRightColumn
-                  ? 'pl-14 sm:pl-[72px] md:pl-[72px]'
-                  : 'pl-14 sm:pl-[72px]'
+                ${
+                  isRightColumn
+                    ? 'pl-14 sm:pl-[72px] md:pl-[72px]'
+                    : 'pl-14 sm:pl-[72px]'
                 }
               `}
             >
 
-              {/* =================================================
-                  TIMELINE NODE
-              ================================================= */}
+              {/* timeline node */}
 
               <div
                 aria-hidden="true"
@@ -227,15 +189,7 @@ export default function PracticeHistory({
                 <span className="h-1.5 w-1.5 rounded-full bg-white" />
               </div>
 
-              {/* =================================================
-                  SESSION NUMBER
-
-                  IMPORTANT:
-                  This is now INSIDE the card area.
-
-                  It is positioned relative to the card wrapper,
-                  rather than outside the timeline.
-              ================================================= */}
+              {/* session number */}
 
               <div
                 aria-hidden="true"
@@ -262,17 +216,11 @@ export default function PracticeHistory({
                 {String(index + 1).padStart(2, '0')}
               </div>
 
-              {/* =================================================
-                  CARD
-
-                  The card itself remains untouched.
-                  Its existing styling is preserved.
-              ================================================= */}
-
               <PracticeHistoryCard
                 session={session}
                 index={index}
-                onClick={() => onReviewSession?.(session)}
+                  onClick={() => onReviewSession?.(session)}
+  onDelete={() => onDeleteSession?.(session)}
               />
             </div>
           )

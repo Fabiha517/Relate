@@ -1,0 +1,33 @@
+<svg
+  xmlns="http://www.w3.org/2000/svg"
+  viewBox="0 0 64 64"
+  fill="none"
+>
+  <!-- Relate favicon -->
+  <rect
+    width="64"
+    height="64"
+    rx="16"
+    fill="#F8F1E5"
+  />
+
+  <!-- Slightly offset editorial shadow -->
+  <path
+    d="M20 14H37C45.3 14 50 18.2 50 25.3C50 30.3 47.2 34 42.4 35.7L51 49H42.2L34.6 37H28.5V49H20V14Z"
+    fill="#071A38"
+  />
+
+  <!-- Main R -->
+  <path
+    d="M16 11H33C41.3 11 46 15.2 46 22.3C46 27.3 43.2 31 38.4 32.7L47 46H38.2L30.6 34H24.5V46H16V11ZM24.5 17.7V27.6H32.1C35.7 27.6 37.5 25.9 37.5 22.7C37.5 19.5 35.7 17.7 32.1 17.7H24.5Z"
+    fill="#5424C7"
+  />
+
+  <!-- Small hand-drawn accent -->
+  <circle
+    cx="49"
+    cy="12"
+    r="3"
+    fill="#FFB800"
+  />
+</svg>

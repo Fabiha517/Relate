@@ -1,26 +1,32 @@
 import './VisualModel.css'
 
 import React from 'react'
+
 import { getWorldTheme } from '../../utils/worldThemes'
 
 /**
  * VisualModel
  *
- * Displays the analogy as a simple two-column mapping diagram.
+ * Displays concept → analogy mappings as a visual relationship map.
  *
- * The visual is intentionally based on `nodes` / `mappings`
- * rather than `relationships`.
+ * Desktop/tablet:
+ *   Concept  →  Analogy
  *
- * This prevents unnecessary branches, crossing arrows,
- * reverse arrows, and confusing relationship labels.
+ * Mobile:
+ *   Concept
+ *      ↓
+ *   Analogy
+ *
+ * The actual mapping data remains unchanged.
  */
+
 export default function VisualModel({
   nodes = [],
   mappings = [],
   analogyWorld,
 }) {
   /**
-   * Build the rows from mappings.
+   * Build display rows from mappings.
    *
    * Every mapping connects:
    * conceptComponent → analogyElement
@@ -38,6 +44,7 @@ export default function VisualModel({
           mapping.conceptComponent ||
           node?.conceptLabel ||
           'Concept',
+
         analogy:
           mapping.analogyElement ||
           node?.analogyLabel ||
@@ -48,8 +55,7 @@ export default function VisualModel({
 
   /**
    * Fallback:
-   *
-   * If mappings are missing for some reason, pair the nodes directly.
+   * If mappings are unavailable, pair nodes directly.
    */
   const displayRows =
     rows.length > 0
@@ -63,23 +69,33 @@ export default function VisualModel({
 
   return (
     <div
-      className={`visual-model visual-model--${theme.pattern || 'minimal'}`}
+      className={`visual-model visual-model--${
+        theme.pattern || 'minimal'
+      }`}
       style={{
         '--world-accent': theme.accent,
         '--world-edge': theme.edgeColor,
-        '--world-node-bg': theme.nodeBg || 'rgba(255,255,255,0.72)',
+        '--world-node-bg':
+          theme.nodeBg || 'rgba(255,255,255,0.72)',
       }}
     >
+      {/* =====================================================
+          HEADER
+      ===================================================== */}
       <div className="visual-model__header">
+
+        {/* REAL CONCEPT */}
         <div className="visual-model__column-title">
           <span className="visual-model__eyebrow">
-            Concept
+            Real concept
           </span>
+
           <span className="visual-model__main-title">
-            What it is
+            SFTP protocol
           </span>
         </div>
 
+        {/* RELATE MARKER */}
         <div
           className="visual-model__connection-heading"
           aria-hidden="true"
@@ -87,43 +103,80 @@ export default function VisualModel({
           <span>RELATE</span>
         </div>
 
+        {/* ANALOGY */}
         <div className="visual-model__column-title visual-model__column-title--analogy">
           <span className="visual-model__eyebrow">
             {analogyWorld || 'Analogy'}
           </span>
+
           <span className="visual-model__main-title">
-            What it’s like
-          </span>
+  {analogyWorld ? `${analogyWorld} version` : 'Analogy version'}
+</span>
         </div>
       </div>
 
+      {/* =====================================================
+          RELATIONSHIP MAP
+      ===================================================== */}
       <div className="visual-model__rows">
+
         {displayRows.map((row, index) => (
           <div
             className="visual-model__row"
             key={`${row.concept}-${row.analogy}-${index}`}
           >
+            {/* =================================================
+                CONCEPT
+            ================================================= */}
             <div className="visual-model__node visual-model__node--concept">
+              <span className="visual-model__node-label">
+                CONCEPT
+              </span>
+
               <span className="visual-model__node-text">
                 {row.concept}
               </span>
             </div>
 
+            {/* =================================================
+                CONNECTION
+            ================================================= */}
             <div
               className="visual-model__connector"
               aria-hidden="true"
             >
               <span className="visual-model__connector-line" />
-              <span className="visual-model__connector-dot" />
+
+              <span className="visual-model__connector-arrow">
+                →
+              </span>
             </div>
 
+            {/* =================================================
+                ANALOGY
+            ================================================= */}
             <div className="visual-model__node visual-model__node--analogy">
+              <span className="visual-model__node-label">
+                ANALOGY
+              </span>
+
               <span className="visual-model__node-text">
                 {row.analogy}
               </span>
             </div>
           </div>
         ))}
+      </div>
+
+      {/* =====================================================
+          MOBILE FOOTER
+      ===================================================== */}
+      <div className="visual-model__mobile-note">
+        <span className="visual-model__mobile-note-dot" />
+
+        <span>
+          Each pair shows how the real concept maps to the analogy.
+        </span>
       </div>
     </div>
   )

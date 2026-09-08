@@ -801,6 +801,119 @@ async function saveSession(
   })
 }
 
+// =========================================================
+// UPDATE EXISTING PRACTICE SESSION
+// =========================================================
+
+async function updateSession(req, res) {
+  try {
+    const {
+      sessionId,
+    } = req.params
+
+    const {
+      analogyId,
+      questions,
+      answers,
+      evaluations,
+      score,
+      completedAt,
+    } = req.body
+
+    if (!sessionId) {
+      return res.status(400).json({
+        error: {
+          message: 'Session ID is required.',
+        },
+      })
+    }
+
+    const session =
+      await PracticeSession.findOne({
+        _id: sessionId,
+        userId: req.user.userId,
+      })
+
+    if (!session) {
+      return res.status(404).json({
+        error: {
+          message: 'Practice session not found.',
+        },
+      })
+    }
+
+    // -------------------------------------------------------
+    // Security check:
+    // Do not allow a session to be moved to another analogy.
+    // -------------------------------------------------------
+
+    if (
+      analogyId &&
+      session.analogyId.toString() !==
+        analogyId.toString()
+    ) {
+      return res.status(400).json({
+        error: {
+          message:
+            'Practice session does not belong to this analogy.',
+        },
+      })
+    }
+
+
+    // -------------------------------------------------------
+    // Replace the stored session snapshot with the
+    // COMPLETE current practice session.
+    //
+    // This is important because Generate More produces:
+    //
+    // Q1...Q5 + Q6...Q10
+    //
+    // and the saved document must contain all of them.
+    // -------------------------------------------------------
+
+    session.questions = questions
+    session.answers = answers
+    session.evaluations = evaluations
+    session.score = score
+
+    session.misconceptions =
+      Array.isArray(evaluations)
+        ? evaluations
+            .filter(
+              (evaluation) =>
+                evaluation.correct === false &&
+                evaluation.misconception
+            )
+            .map(
+              (evaluation) =>
+                evaluation.misconception
+            )
+        : []
+
+    session.completedAt =
+      new Date(completedAt)
+
+    await session.save()
+
+    return res.status(200).json({
+      sessionId: session._id,
+    })
+
+  } catch (error) {
+    console.error(
+      'Update practice session failed:',
+      error
+    )
+
+    return res.status(500).json({
+      error: {
+        message:
+          'Failed to update practice session. Please try again.',
+      },
+    })
+  }
+}
 /* ─────────────────────────────────────────────
  * GET /api/practice/sessions/:analogyId
  * ──────────────────────────────────────────── */
@@ -951,7 +1064,7 @@ async function getHistory(
         req.user.userId,
     })
       .sort({
-        completedAt: -1,
+        completedAt: 1,
       })
       .populate(
         'analogyId',
@@ -1065,6 +1178,7 @@ module.exports = {
   generateMoreQuestions,
   evaluate,
   saveSession,
+  updateSession,
   getSessionsForAnalogy,
   getSessionById,
   getHistory,

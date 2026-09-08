@@ -93,7 +93,7 @@ export default function HomePage() {
       ===================================================== */}
 
       {step === 1 && (
-        <div className="relative min-h-screen overflow-hidden">
+        <div className="relative min-h-screen overflow-hidden pb-6">
 
           {/* BACKGROUND DECORATION */}
 
@@ -424,102 +424,6 @@ export default function HomePage() {
                 )}
               </section>
 
-              {/* AI MESSAGE */}
-
-              <div
-                className="
-                  relative
-                  mt-8
-                  hidden
-                  w-fit
-                  items-center
-                  gap-3
-                  pb-8
-                  lg:flex
-                  lg:absolute
-                  lg:bottom-[2%]
-                  lg:left-[6%]
-                  lg:mt-0
-                  lg:pb-0
-                "
-              >
-
-                <div
-                  className="
-                    flex
-                    h-[58px]
-                    w-[58px]
-                    flex-shrink-0
-                    items-center
-                    justify-center
-                    rounded-full
-                    bg-[#e5edf3]
-                    text-[27px]
-                    sm:h-[65px]
-                    sm:w-[65px]
-                    sm:text-[29px]
-                    lg:h-[72px]
-                    lg:w-[72px]
-                    lg:text-[32px]
-                  "
-                >
-                  ✨
-                </div>
-
-                <p
-                  className="
-                    max-w-[180px]
-                    font-serif
-                    text-[14px]
-                    italic
-                    leading-[1.25]
-                    text-[#162b48]
-                    sm:text-[16px]
-                    lg:text-[17px]
-                  "
-                >
-                  AI turns
-                  <br />
-                  complex into
-                  <br />
-                  relatable.
-                </p>
-
-                <svg
-                  className="
-                    pointer-events-none
-                    absolute
-                    left-[100px]
-                    top-[45px]
-                    hidden
-                    w-[125px]
-                    lg:left-[155px]
-                    lg:top-[40px]
-                    lg:block
-                    lg:w-[145px]
-                  "
-                  viewBox="0 0 150 60"
-                  fill="none"
-                  aria-hidden="true"
-                >
-                  <path
-                    d="M5 8 C35 50, 100 55, 135 20"
-                    stroke="#536777"
-                    strokeWidth="2"
-                    strokeLinecap="round"
-                  />
-
-                  <path
-                    d="M125 18 L138 18 L133 30"
-                    stroke="#536777"
-                    strokeWidth="2"
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                  />
-                </svg>
-
-              </div>
-
             </div>
 
             {/* =================================================
@@ -537,6 +441,7 @@ export default function HomePage() {
                 lg:mt-0
                 lg:pt-0
                 xl:pt-2
+                
               "
             >
 
@@ -573,150 +478,525 @@ export default function HomePage() {
               <div
                 className="
                   relative
-                  flex
-                  w-full
-                  max-w-[680px]
-                  flex-col
-                  items-center
-                  justify-center
-                  gap-8
-                  py-2
-
-                  md:flex-row
-                  md:gap-3
-
-                  lg:flex-col
-                  lg:gap-10
-                  lg:scale-[1.08]
-
-                  xl:scale-[1.12]
+  flex
+  w-full
+  max-w-[520px]
+  flex-col
+  items-center
+  justify-center
+  gap-5
+  py-2
+  md:max-w-[760px]
+  md:flex-row
+  md:gap-5
+  lg:max-w-[680px]
+  lg:flex-col
+  lg:gap-10
+  lg:scale-[1.08]
+  xl:scale-[1.12]
                 "
               >
 
-                {/* =================================================
-                    NETWORK SVG
-                ================================================= */}
+{/* =========================================================
+    NETWORK SVG
+    Responsive curved network
+    Desktop artwork preserved
+========================================================= */}
+<svg
+  className="
+    pointer-events-none
+    absolute
+    inset-0
+    z-0
+    block
+    h-full
+    w-full
+  "
+  viewBox="0 0 600 620"
+  fill="none"
+  preserveAspectRatio="none"
+  aria-hidden="true"
+>
 
-                <svg
-                  className="
-                    pointer-events-none
-                    absolute
-                    inset-0
-                    z-0
-                    hidden
-                    h-full
-                    w-full
-                    md:block
-                    lg:block
-                  "
-                  viewBox="0 0 600 620"
-                  fill="none"
-                  preserveAspectRatio="none"
-                  aria-hidden="true"
-                >
+  {/* =======================================================
+      MOBILE
+      Vertical card stack
+      Large curved network surrounding the cards
+  ======================================================= */}
+  <g className="block md:hidden">
 
-                  <path
-                    className="relate-network-path"
-                    d="
-                      M 235 105
-                      C 330 120,
-                        390 150,
-                        455 220
-                      C 500 275,
-                        485 330,
-                        430 365
-                    "
-                    stroke="#536777"
-                    strokeWidth="2"
-                    strokeDasharray="3 8"
-                    strokeLinecap="round"
-                    opacity="0.80"
-                  />
+    {/* -------------------------------------------------------
+        LEFT OUTER SWEEP
+    ------------------------------------------------------- */}
+    <path
+      className="relate-network-path"
+      d="
+        M 125 120
+        C 55 155, 45 230, 105 260
+        C 155 285, 185 300, 145 340
+        C 105 380, 55 410, 95 455
+        C 130 495, 175 510, 155 570
+      "
+      stroke="#536777"
+      strokeWidth="2"
+      strokeDasharray="3 8"
+      strokeLinecap="round"
+      fill="none"
+      opacity="0.82"
+    />
 
-                  <path
-                    className="relate-network-path"
-                    d="
-                      M 455 270
-                      C 390 310,
-                        350 360,
-                        400 430
-                    "
-                    stroke="#536777"
-                    strokeWidth="2"
-                    strokeDasharray="3 8"
-                    strokeLinecap="round"
-                    opacity="0.80"
-                  />
+    {/* -------------------------------------------------------
+        RIGHT OUTER SWEEP
+    ------------------------------------------------------- */}
+    <path
+      className="relate-network-path"
+      d="
+        M 470 105
+        C 545 145, 555 215, 500 250
+        C 455 280, 420 300, 470 335
+        C 520 370, 555 420, 505 455
+        C 470 480, 425 505, 455 565
+      "
+      stroke="#536777"
+      strokeWidth="2"
+      strokeDasharray="2 9"
+      strokeLinecap="round"
+      fill="none"
+      opacity="0.78"
+    />
 
-                  <path
-                    className="relate-network-path"
-                    d="
-                      M 350 90
-                      C 210 100,
-                        110 190,
-                        110 330
-                      C 110 470,
-                        210 550,
-                        350 570
-                    "
-                    stroke="#536777"
-                    strokeWidth="2"
-                    strokeDasharray="2 9"
-                    strokeLinecap="round"
-                    fill="none"
-                    opacity="0.75"
-                  />
+    {/* -------------------------------------------------------
+        UPPER CROSSING CURVE
+    ------------------------------------------------------- */}
+    <path
+      className="relate-network-path"
+      d="
+        M 105 155
+        C 180 115, 270 135, 325 175
+        C 370 208, 420 205, 495 155
+      "
+      stroke="#536777"
+      strokeWidth="1.7"
+      strokeDasharray="2 9"
+      strokeLinecap="round"
+      fill="none"
+      opacity="0.88"
+    />
 
-                  <path
-                    className="relate-network-path"
-                    d="
-                      M 280 100
-                      C 360 80,
-                        485 120,
-                        410 210
-                      C 350 280,
-                        300 330,
-                        335 410
-                    "
-                    stroke="#536777"
-                    strokeWidth="1.5"
-                    strokeDasharray="2 9"
-                    strokeLinecap="round"
-                    opacity="0.90"
-                  />
+    {/* -------------------------------------------------------
+        MAIN CENTRAL WAVE
+    ------------------------------------------------------- */}
+    <path
+      className="relate-network-path"
+      d="
+        M 105 205
+        C 170 165, 235 180, 285 225
+        C 335 270, 390 270, 495 215
+      "
+      stroke="#536777"
+      strokeWidth="2"
+      strokeDasharray="3 8"
+      strokeLinecap="round"
+      fill="none"
+      opacity="0.88"
+    />
 
-                  <circle
-                    cx="235"
-                    cy="105"
-                    r="7"
-                    fill="#071a38"
-                  />
+    {/* -------------------------------------------------------
+        SECOND CENTRAL WAVE
+    ------------------------------------------------------- */}
+    <path
+      className="relate-network-path"
+      d="
+        M 495 285
+        C 430 250, 370 285, 330 320
+        C 290 355, 220 350, 105 295
+      "
+      stroke="#536777"
+      strokeWidth="1.7"
+      strokeDasharray="2 9"
+      strokeLinecap="round"
+      fill="none"
+      opacity="0.84"
+    />
 
-                  <circle
-                    cx="455"
-                    cy="220"
-                    r="7"
-                    fill="#071a38"
-                  />
+    {/* -------------------------------------------------------
+        DIAGONAL CROSSOVER
+    ------------------------------------------------------- */}
+    <path
+      className="relate-network-path"
+      d="
+        M 130 325
+        C 205 285, 255 300, 300 345
+        C 345 390, 405 405, 475 350
+      "
+      stroke="#536777"
+      strokeWidth="2"
+      strokeDasharray="3 8"
+      strokeLinecap="round"
+      fill="none"
+      opacity="0.78"
+    />
 
-                  <circle
-                    cx="400"
-                    cy="430"
-                    r="7"
-                    fill="#071a38"
-                  />
+    {/* -------------------------------------------------------
+        LOWER LOOP
+    ------------------------------------------------------- */}
+    <path
+      className="relate-network-path"
+      d="
+        M 105 405
+        C 170 370, 235 385, 285 430
+        C 335 475, 405 475, 495 405
+      "
+      stroke="#536777"
+      strokeWidth="1.7"
+      strokeDasharray="2 9"
+      strokeLinecap="round"
+      fill="none"
+      opacity="0.90"
+    />
 
-                  <circle
-                    cx="310"
-                    cy="335"
-                    r="9"
-                    fill="#f8f1e5"
-                    stroke="#19aaa7"
-                    strokeWidth="3"
-                  />
+    {/* -------------------------------------------------------
+        LOWER RETURN ARC
+    ------------------------------------------------------- */}
+    <path
+      className="relate-network-path"
+      d="
+        M 155 470
+        C 215 440, 270 455, 315 495
+        C 355 530, 405 540, 455 500
+      "
+      stroke="#536777"
+      strokeWidth="2"
+      strokeDasharray="3 8"
+      strokeLinecap="round"
+      fill="none"
+      opacity="0.78"
+    />
 
-                </svg>
+    {/* -------------------------------------------------------
+        SMALL FLOATING CURVE
+    ------------------------------------------------------- */}
+    <path
+      className="relate-network-path"
+      d="
+        M 450 175
+        C 405 195, 390 225, 415 250
+        C 440 275, 455 290, 440 315
+      "
+      stroke="#536777"
+      strokeWidth="1.5"
+      strokeDasharray="2 9"
+      strokeLinecap="round"
+      fill="none"
+      opacity="0.70"
+    />
 
+    {/* -------------------------------------------------------
+        MOBILE NODES
+    ------------------------------------------------------- */}
+    <circle
+      cx="125"
+      cy="120"
+      r="6"
+      fill="#071a38"
+    />
+
+    <circle
+      cx="495"
+      cy="215"
+      r="6"
+      fill="#071a38"
+    />
+
+    <circle
+      cx="105"
+      cy="405"
+      r="6"
+      fill="#071a38"
+    />
+
+    <circle
+      cx="455"
+      cy="500"
+      r="7"
+      fill="#071a38"
+    />
+
+    <circle
+      cx="300"
+      cy="345"
+      r="9"
+      fill="#f8f1e5"
+      stroke="#19aaa7"
+      strokeWidth="3"
+    />
+
+  </g>
+
+
+  {/* =======================================================
+      TABLET / LAPTOP
+      Horizontal card row
+      Curves travel ABOVE + BELOW + BETWEEN cards
+  ======================================================= */}
+  <g className="hidden md:block lg:hidden">
+
+    {/* -------------------------------------------------------
+        LARGE TOP ARC
+    ------------------------------------------------------- */}
+    <path
+      className="relate-network-path"
+      d="
+        M 65 315
+        C 90 235, 175 190, 265 230
+        C 330 260, 375 255, 440 220
+        C 510 185, 555 225, 570 300
+      "
+      stroke="#536777"
+      strokeWidth="2"
+      strokeDasharray="3 8"
+      strokeLinecap="round"
+      fill="none"
+      opacity="0.82"
+    />
+
+    {/* -------------------------------------------------------
+        TOP INNER WAVE
+    ------------------------------------------------------- */}
+    <path
+      className="relate-network-path"
+      d="
+        M 80 330
+        C 150 280, 205 275, 260 310
+        C 315 345, 370 345, 430 295
+        C 480 255, 525 265, 565 315
+      "
+      stroke="#536777"
+      strokeWidth="1.7"
+      strokeDasharray="2 9"
+      strokeLinecap="round"
+      fill="none"
+      opacity="0.90"
+    />
+
+    {/* -------------------------------------------------------
+        MAIN CENTRAL WAVE
+    ------------------------------------------------------- */}
+    <path
+      className="relate-network-path"
+      d="
+        M 65 355
+        C 125 390, 185 385, 235 345
+        C 285 305, 330 300, 380 340
+        C 430 380, 485 390, 565 350
+      "
+      stroke="#536777"
+      strokeWidth="2"
+      strokeDasharray="3 8"
+      strokeLinecap="round"
+      fill="none"
+      opacity="0.88"
+    />
+
+    {/* -------------------------------------------------------
+        LARGE LOWER ARC
+    ------------------------------------------------------- */}
+    <path
+      className="relate-network-path"
+      d="
+        M 55 385
+        C 100 470, 190 490, 255 445
+        C 315 405, 365 400, 430 445
+        C 485 480, 540 455, 570 390
+      "
+      stroke="#536777"
+      strokeWidth="1.7"
+      strokeDasharray="2 9"
+      strokeLinecap="round"
+      fill="none"
+      opacity="0.80"
+    />
+
+    {/* -------------------------------------------------------
+        LOWER CROSSOVER
+    ------------------------------------------------------- */}
+    <path
+      className="relate-network-path"
+      d="
+        M 95 420
+        C 155 375, 215 375, 270 420
+        C 325 465, 380 465, 440 410
+        C 485 370, 530 370, 560 415
+      "
+      stroke="#536777"
+      strokeWidth="2"
+      strokeDasharray="3 8"
+      strokeLinecap="round"
+      fill="none"
+      opacity="0.78"
+    />
+
+    {/* -------------------------------------------------------
+        LONG DIAGONAL SWEEP
+    ------------------------------------------------------- */}
+    <path
+      className="relate-network-path"
+      d="
+        M 115 270
+        C 175 350, 235 375, 300 315
+        C 355 265, 420 275, 485 350
+        C 510 380, 535 385, 565 365
+      "
+      stroke="#536777"
+      strokeWidth="1.5"
+      strokeDasharray="2 9"
+      strokeLinecap="round"
+      fill="none"
+      opacity="0.86"
+    />
+
+    {/* -------------------------------------------------------
+        RIGHT-SIDE LOOP
+    ------------------------------------------------------- */}
+    <path
+      className="relate-network-path"
+      d="
+        M 430 245
+        C 470 270, 485 300, 465 330
+        C 445 360, 425 380, 450 405
+        C 475 430, 510 425, 535 400
+      "
+      stroke="#536777"
+      strokeWidth="1.5"
+      strokeDasharray="2 9"
+      strokeLinecap="round"
+      fill="none"
+      opacity="0.72"
+    />
+
+    {/* -------------------------------------------------------
+        TABLET NODES
+    ------------------------------------------------------- */}
+    <circle
+      cx="65"
+      cy="315"
+      r="6"
+      fill="#071a38"
+    />
+
+    <circle
+      cx="265"
+      cy="230"
+      r="6"
+      fill="#071a38"
+    />
+
+    <circle
+      cx="380"
+      cy="340"
+      r="7"
+      fill="#071a38"
+    />
+
+    <circle
+      cx="560"
+      cy="415"
+      r="6"
+      fill="#071a38"
+    />
+
+    <circle
+      cx="300"
+      cy="315"
+      r="9"
+      fill="#f8f1e5"
+      stroke="#19aaa7"
+      strokeWidth="3"
+    />
+
+  </g>
+
+
+  {/* =======================================================
+      DESKTOP
+      ORIGINAL NETWORK — UNCHANGED
+  ======================================================= */}
+  <g className="hidden lg:block">
+
+    <path
+      className="relate-network-path"
+      d="M 235 105 C 330 120, 390 150, 455 220 C 500 275, 485 330, 430 365"
+      stroke="#536777"
+      strokeWidth="2"
+      strokeDasharray="3 8"
+      strokeLinecap="round"
+      opacity="0.80"
+    />
+
+    <path
+      className="relate-network-path"
+      d="M 455 270 C 390 310, 350 360, 400 430"
+      stroke="#536777"
+      strokeWidth="2"
+      strokeDasharray="3 8"
+      strokeLinecap="round"
+      opacity="0.80"
+    />
+
+    <path
+      className="relate-network-path"
+      d="M 350 90 C 210 100, 110 190, 110 330 C 110 470, 210 550, 350 570"
+      stroke="#536777"
+      strokeWidth="2"
+      strokeDasharray="2 9"
+      strokeLinecap="round"
+      fill="none"
+      opacity="0.75"
+    />
+
+    <path
+      className="relate-network-path"
+      d="M 280 100 C 360 80, 485 120, 410 210 C 350 280, 300 330, 335 410"
+      stroke="#536777"
+      strokeWidth="1.5"
+      strokeDasharray="2 9"
+      strokeLinecap="round"
+      opacity="0.90"
+    />
+
+    <circle
+      cx="235"
+      cy="105"
+      r="7"
+      fill="#071a38"
+    />
+
+    <circle
+      cx="455"
+      cy="220"
+      r="7"
+      fill="#071a38"
+    />
+
+    <circle
+      cx="400"
+      cy="430"
+      r="7"
+      fill="#071a38"
+    />
+
+    <circle
+      cx="310"
+      cy="335"
+      r="9"
+      fill="#f8f1e5"
+      stroke="#19aaa7"
+      strokeWidth="3"
+    />
+
+  </g>
+
+</svg>  
                 {/* =================================================
                     RESTAURANT CARD
                 ================================================= */}
@@ -1032,7 +1312,100 @@ export default function HomePage() {
 
               </div>
             </section>
+ <div
+                className="
+                  relative
+                  mt-8
+                  hidden
+                  w-fit
+                  items-center
+                  gap-3
+                  pb-8
+                  lg:flex
+                  lg:absolute
+                  lg:bottom-[-1%]
+                  lg:left-[6%]
+                  lg:mt-0
+                  
+                  lg:pb-0
+                "
+              >
 
+                <div
+                  className="
+                    flex
+                    h-[58px]
+                    w-[58px]
+                    flex-shrink-0
+                    items-center
+                    justify-center
+                    rounded-full
+                    bg-[#e5edf3]
+                    text-[27px]
+                    sm:h-[65px]
+                    sm:w-[65px]
+                    sm:text-[29px]
+                    lg:h-[72px]
+                    lg:w-[72px]
+                    lg:text-[32px]
+                  "
+                >
+                  ✨
+                </div>
+
+                <p
+                  className="
+                    max-w-[180px]
+                    font-serif
+                    text-[14px]
+                    italic
+                    leading-[1.25]
+                    text-[#162b48]
+                    sm:text-[16px]
+                    lg:text-[17px]
+                  "
+                >
+                  AI turns
+                  <br />
+                  complex into
+                  <br />
+                  relatable.
+                </p>
+
+                <svg
+                  className="
+                    pointer-events-none
+                    absolute
+                    left-[100px]
+                    top-[45px]
+                    hidden
+                    w-[125px]
+                    lg:left-[155px]
+                    lg:top-[40px]
+                    lg:block
+                    lg:w-[145px]
+                  "
+                  viewBox="0 0 150 60"
+                  fill="none"
+                  aria-hidden="true"
+                >
+                  <path
+                    d="M5 8 C35 50, 100 55, 135 20"
+                    stroke="#536777"
+                    strokeWidth="2"
+                    strokeLinecap="round"
+                  />
+
+                  <path
+                    d="M125 18 L138 18 L133 30"
+                    stroke="#536777"
+                    strokeWidth="2"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                  />
+                </svg>
+
+              </div>
           </div>
         </div>
       )}

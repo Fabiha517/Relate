@@ -71,10 +71,10 @@ async function register(req, res) {
   try {
     const { name, email, password, guestAnalogy } = req.body;
 
-    // Hash password — plaintext is never stored
+    // Hash password ï¿½ plaintext is never stored
     const passwordHash = await bcrypt.hash(password, 12);
 
-    // Create user — duplicate email throws MongoServerError code 11000
+    // Create user ï¿½ duplicate email throws MongoServerError code 11000
     let user;
     try {
       user = await User.create({
@@ -83,7 +83,7 @@ async function register(req, res) {
         passwordHash
       });
     } catch (dbErr) {
-      // Duplicate key error — email already registered
+      // Duplicate key error ï¿½ email already registered
       if (dbErr.code === 11000) {
         return res.status(400).json({
           error: {
@@ -98,7 +98,7 @@ async function register(req, res) {
       throw dbErr; // re-throw unexpected DB errors
     }
 
-    // Optional guestAnalogy transfer — non-blocking (failures must not fail registration)
+    // Optional guestAnalogy transfer ï¿½ non-blocking (failures must not fail registration)
     if (guestAnalogy !== undefined && guestAnalogy !== null) {
       try {
         // Sanitize the guest analogy before validation (removes HTML, MongoDB injection patterns)
@@ -120,7 +120,7 @@ async function register(req, res) {
           limitations: sanitized.limitations
         });
       } catch {
-        // Validation failure OR save failure — silently skip (non-blocking per spec)
+        // Validation failure OR save failure ï¿½ silently skip (non-blocking per spec)
         // Registration still succeeds even if guestAnalogy transfer fails
       }
     }
@@ -142,35 +142,54 @@ async function register(req, res) {
  *
  * Body: { email, password }
  *
- * Generic 401 on any credential mismatch — never reveal which field is wrong.
+ * Generic 401 on any credential mismatch ï¿½ never reveal which field is wrong.
  */
 async function login(req, res) {
   try {
     const { email, password } = req.body;
 
-    const user = await User.findOne({ email: email.trim().toLowerCase() });
+    const user = await User.findOne({
+      email: email.trim().toLowerCase(),
+    });
 
-    // Constant-time comparison path: always run bcrypt to prevent timing attacks
-    const passwordMatch = user
-      ? await bcrypt.compare(password, user.passwordHash)
-      : false;
-
-    if (!user || !passwordMatch) {
+    // Email does not belong to an existing account
+    if (!user) {
       return res.status(401).json({
         error: {
-          code: 'AUTH_ERROR',
-          message: 'Invalid email or password.'
-        }
+          code: 'USER_NOT_FOUND',
+          message: 'No account found with this email.',
+        },
+      });
+    }
+
+    // Account exists, now verify password
+    const passwordMatch = await bcrypt.compare(
+      password,
+      user.passwordHash
+    );
+
+    if (!passwordMatch) {
+      return res.status(401).json({
+        error: {
+          code: 'INVALID_PASSWORD',
+          message: 'Incorrect password. Please try again.',
+        },
       });
     }
 
     setAuthCookie(res, user);
 
-    return res.status(200).json({ user: formatUser(user) });
+    return res.status(200).json({
+      user: formatUser(user),
+    });
   } catch (err) {
     console.error('[auth.controller] login error:', err.message);
+
     return res.status(500).json({
-      error: { code: 'SERVER_ERROR', message: 'Login failed. Please try again.' }
+      error: {
+        code: 'SERVER_ERROR',
+        message: 'Login failed. Please try again.',
+      },
     });
   }
 }
@@ -194,7 +213,7 @@ function logout(req, res) {
 /**
  * GET /api/auth/me
  *
- * Protected by requireAuth middleware — req.user is guaranteed to have { userId, email }.
+ * Protected by requireAuth middleware ï¿½ req.user is guaranteed to have { userId, email }.
  * Fetches the full user record to return name and createdAt.
  */
 async function me(req, res) {
@@ -223,7 +242,7 @@ async function me(req, res) {
  * Body: { name }
  *
  * Updates the authenticated user's profile information.
- * Protected by requireAuth middleware — req.user contains { userId, email }.
+ * Protected by requireAuth middleware ï¿½ req.user contains { userId, email }.
  */
 async function updateProfile(req, res) {
   try {
@@ -263,7 +282,7 @@ async function updateProfile(req, res) {
  * Body: { currentPassword, newPassword }
  *
  * Changes the authenticated user's password.
- * Protected by requireAuth middleware — req.user contains { userId, email }.
+ * Protected by requireAuth middleware ï¿½ req.user contains { userId, email }.
  */
 async function changePassword(req, res) {
   try {
@@ -318,11 +337,11 @@ async function changePassword(req, res) {
  *
  * Body: { email }
  *
- * Always returns 200 with the same message — enumeration-safe (Req 16.x).
+ * Always returns 200 with the same message ï¿½ enumeration-safe (Req 16.x).
  * Side effect when email exists: generate token, store hash, send reset email.
  */
 async function forgotPassword(req, res) {
-  // Send the response immediately — processing continues but response is not awaited
+  // Send the response immediately ï¿½ processing continues but response is not awaited
   // This prevents timing-based email enumeration
   const SAFE_RESPONSE = {
     message: 'If an account with that email exists, a reset link has been sent.'
@@ -341,17 +360,17 @@ async function forgotPassword(req, res) {
 
       const expiresAt = new Date(Date.now() + 60 * 60 * 1000); // now + 1 hour
 
-      // Store ONLY the hash — plaintext is never persisted (Req 16.16)
+      // Store ONLY the hash ï¿½ plaintext is never persisted (Req 16.16)
       await ResetToken.create({
         userId: user._id,
         tokenHash,
         expiresAt
       });
 
-      // Build the reset URL — plaintext token is embedded in the URL, not logged
+      // Build the reset URL ï¿½ plaintext token is embedded in the URL, not logged
       const resetUrl = `${config.clientOrigin}/reset?token=${plaintext}`;
 
-      // Send email (non-blocking — fire and forget; failures should not affect response)
+      // Send email (non-blocking ï¿½ fire and forget; failures should not affect response)
       emailService.sendPasswordResetEmail({ to: normalizedEmail, resetUrl }).catch(emailErr => {
         console.error('[auth.controller] forgotPassword email error:', emailErr.message);
       });
@@ -384,7 +403,7 @@ async function resetPassword(req, res) {
   try {
     const { token, newPassword } = req.body;
 
-    // Hash the submitted token for lookup — plaintext is never stored
+    // Hash the submitted token for lookup ï¿½ plaintext is never stored
     const tokenHash = tokenService.hashToken(token.trim());
 
     const resetToken = await ResetToken.findOne({ tokenHash });
@@ -408,7 +427,7 @@ async function resetPassword(req, res) {
     ]);
 
     if (!updateResult) {
-      // User was deleted between token creation and now — edge case
+      // User was deleted between token creation and now ï¿½ edge case
       return res.status(400).json(INVALID_TOKEN_RESPONSE);
     }
 

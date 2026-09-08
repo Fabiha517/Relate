@@ -3,138 +3,567 @@
 const nodemailer = require('nodemailer');
 const env = require('../../config/env');
 
-/**
- * email.service.js — Password reset email service via Nodemailer
- *
- * Sends transactional password reset emails using SMTP configuration
- * from environment variables. The plaintext reset token appears ONLY
- * in the email URL — never in logs, console output, or stored data.
- *
- * Requirements: 16.12 (email service), 16.13 (reset email flow), 16.16 (no plaintext logging)
- */
-
 let transporter = null;
 
-/**
- * Initialize or retrieve the Nodemailer SMTP transporter.
- * Lazily created on first use.
- *
- * @returns {object} Configured Nodemailer transporter
- */
+/* =========================================================
+   SMTP TRANSPORT
+========================================================= */
+
 function getTransporter() {
   if (!transporter) {
     transporter = nodemailer.createTransport({
       host: process.env.EMAIL_HOST,
-      port: parseInt(process.env.EMAIL_PORT || 587),
-      secure: process.env.EMAIL_SECURE === 'true', // true for 465, false for 587
+      port: parseInt(process.env.EMAIL_PORT || 587, 10),
+      secure: process.env.EMAIL_SECURE === 'true',
       auth: {
         user: process.env.EMAIL_USER,
-        pass: process.env.EMAIL_PASS
-      }
+        pass: process.env.EMAIL_PASS,
+      },
     });
   }
+
   return transporter;
 }
 
-/**
- * Compose HTML content for password reset email.
- * The plaintext token appears only in the resetUrl; not stored or logged elsewhere.
- *
- * @param {string} resetUrl - Full reset URL including plaintext token query param
- * @returns {string} HTML email body
- */
+/* =========================================================
+   RELATE EMAIL — HTML
+========================================================= */
+
 function composeResetEmailHtml(resetUrl) {
   return `
 <!DOCTYPE html>
-<html>
-  <head>
-    <meta charset="UTF-8">
-    <style>
-      body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif; line-height: 1.6; color: #333; }
-      .container { max-width: 600px; margin: 0 auto; padding: 20px; background: #f5f0e8; }
-      .card { background: #ffffff; padding: 40px; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
-      .logo { font-size: 24px; font-weight: bold; color: #5b4fcf; margin-bottom: 24px; }
-      .heading { font-size: 20px; font-weight: 600; color: #1a1a2e; margin-bottom: 16px; }
-      .body-text { font-size: 16px; color: #1a1a2e; margin-bottom: 16px; }
-      .cta-button { display: inline-block; background: #5b4fcf; color: #ffffff; padding: 14px 32px; border-radius: 8px; text-decoration: none; font-weight: 600; margin: 24px 0; }
-      .cta-button:hover { background: #4a3fb8; }
-      .warning-text { font-size: 14px; color: #6b6b8a; margin-top: 24px; font-style: italic; }
-      .footer { font-size: 13px; color: #6b6b8a; margin-top: 32px; padding-top: 16px; border-top: 1px solid #ede8df; }
-    </style>
-  </head>
-  <body>
-    <div class="container">
-      <div class="card">
-        <div class="logo">Relate</div>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1.0"
+  />
 
-        <h1 class="heading">Reset Your Password</h1>
+  <title>Reset Your Relate Password</title>
 
-        <p class="body-text">
-          We received a request to reset your password. Click the link below to create a new password.
-          This link will expire in 1 hour.
-        </p>
+  <style>
+    @media only screen and (max-width: 620px) {
+      .email-shell {
+        padding: 20px 12px !important;
+      }
 
-        <div style="text-align: center;">
-          <a href="${resetUrl}" class="cta-button">Reset Password</a>
-        </div>
+      .main-card {
+        width: 100% !important;
+      }
 
-        <p class="body-text">
-          Or copy and paste this link in your browser:<br>
-          <code style="word-break: break-all; background: #f5f0e8; padding: 8px; display: block; margin-top: 8px;">${resetUrl}</code>
-        </p>
+      .content {
+        padding: 34px 24px !important;
+      }
 
-        <p class="warning-text">
-          <strong>Didn't request a password reset?</strong> You can safely ignore this email. Your password will not change unless you use the link above.
-        </p>
+      .headline {
+        font-size: 42px !important;
+        line-height: 0.95 !important;
+      }
 
-        <div class="footer">
-          <p>
-            This is an automated message from Relate. Please do not reply to this email.
-          </p>
-        </div>
-      </div>
-    </div>
-  </body>
+      .intro {
+        font-size: 16px !important;
+      }
+
+      .reset-button {
+        display: block !important;
+        width: auto !important;
+      }
+    }
+  </style>
+</head>
+
+<body
+  style="
+    margin:0;
+    padding:0;
+    background:#f3eadb;
+    font-family:Arial, Helvetica, sans-serif;
+    color:#071a38;
+  "
+>
+
+  <!-- OUTER CANVAS -->
+  <table
+    width="100%"
+    cellpadding="0"
+    cellspacing="0"
+    border="0"
+    style="background:#f3eadb;"
+  >
+    <tr>
+      <td
+        align="center"
+        class="email-shell"
+        style="padding:42px 18px;"
+      >
+
+        <!-- MAIN CARD -->
+        <table
+          width="600"
+          cellpadding="0"
+          cellspacing="0"
+          border="0"
+          class="main-card"
+          style="
+            width:600px;
+            max-width:600px;
+            background:#fffaf1;
+            border:3px solid #071a38;
+            border-radius:24px;
+            overflow:hidden;
+            box-shadow:8px 8px 0 #071a38;
+          "
+        >
+
+          <!-- =================================================
+               TOP ART AREA
+          ================================================== -->
+
+          <tr>
+            <td
+              style="
+                padding:28px 30px 22px;
+                background:#5424c7;
+                border-bottom:3px solid #071a38;
+              "
+            >
+
+              <table
+                width="100%"
+                cellpadding="0"
+                cellspacing="0"
+                border="0"
+              >
+                <tr>
+
+                  <!-- LOGO -->
+                  <td
+                    valign="middle"
+                    style="
+                      font-family:Arial, Helvetica, sans-serif;
+                      font-size:24px;
+                      font-weight:900;
+                      letter-spacing:-1px;
+                      color:#fffaf1;
+                    "
+                  >
+                    RELATE<span style="color:#ffd65a;">.</span>
+                  </td>
+
+                  <!-- DECORATIVE SHAPES -->
+                  <td
+                    align="right"
+                    valign="middle"
+                  >
+
+                    <table
+                      cellpadding="0"
+                      cellspacing="0"
+                      border="0"
+                    >
+                      <tr>
+
+                        <td
+                          style="
+                            width:18px;
+                            height:18px;
+                            background:#ffd65a;
+                            border:2px solid #071a38;
+                            border-radius:50%;
+                          "
+                        >
+                          &nbsp;
+                        </td>
+
+                        <td style="width:10px;">
+                          &nbsp;
+                        </td>
+
+                        <td
+                          style="
+                            width:16px;
+                            height:16px;
+                            background:#ff8068;
+                            border:2px solid #071a38;
+                            border-radius:4px;
+                          "
+                        >
+                          &nbsp;
+                        </td>
+
+                        <td style="width:10px;">
+                          &nbsp;
+                        </td>
+
+                        <td
+                          style="
+                            width:20px;
+                            height:20px;
+                            background:#55c9c1;
+                            border:2px solid #071a38;
+                            border-radius:50%;
+                          "
+                        >
+                          &nbsp;
+                        </td>
+
+                      </tr>
+                    </table>
+
+                  </td>
+                </tr>
+              </table>
+
+              <!-- LITTLE LABEL -->
+
+              <div
+                style="
+                  margin-top:24px;
+                  font-size:11px;
+                  line-height:1;
+                  font-weight:800;
+                  letter-spacing:2px;
+                  text-transform:uppercase;
+                  color:#ffd65a;
+                "
+              >
+                YOUR LEARNING SPACE
+              </div>
+
+            </td>
+          </tr>
+
+
+          <!-- =================================================
+               MAIN CONTENT
+          ================================================== -->
+
+          <tr>
+            <td
+              class="content"
+              style="
+                padding:48px 48px 42px;
+              "
+            >
+
+              <!-- EYEBROW -->
+
+              <div
+                style="
+                  display:inline-block;
+                  padding:7px 11px;
+                  margin-bottom:22px;
+                  background:#ffd65a;
+                  border:2px solid #071a38;
+                  border-radius:999px;
+                  font-size:11px;
+                  font-weight:900;
+                  letter-spacing:1px;
+                  text-transform:uppercase;
+                "
+              >
+                Password Reset
+              </div>
+
+
+              <!-- HEADLINE -->
+
+              <div
+                class="headline"
+                style="
+                  font-family:Georgia, 'Times New Roman', serif;
+                  font-size:54px;
+                  line-height:0.94;
+                  font-weight:700;
+                  letter-spacing:-2.5px;
+                  color:#071a38;
+                  margin-bottom:24px;
+                "
+              >
+                Let's get<br />
+                you back <span style="color:#5424c7;">in.</span>
+              </div>
+
+
+              <!-- BODY -->
+
+              <div
+                class="intro"
+                style="
+                  font-size:17px;
+                  line-height:1.65;
+                  color:#34445b;
+                  margin-bottom:28px;
+                "
+              >
+                Someone requested a password reset for your
+                <strong style="color:#071a38;">Relate</strong>
+                account.
+                No worries — it happens.
+              </div>
+
+
+              <!-- HAND-DRAWN-ISH NOTE -->
+
+              <table
+                width="100%"
+                cellpadding="0"
+                cellspacing="0"
+                border="0"
+                style="
+                  margin-bottom:30px;
+                "
+              >
+                <tr>
+                  <td
+                    style="
+                      padding:18px 20px;
+                      background:#f7efe2;
+                      border:2px dashed #53677c;
+                      border-radius:14px;
+                      font-size:14px;
+                      line-height:1.55;
+                      color:#53677c;
+                    "
+                  >
+                    <strong style="color:#071a38;">
+                      ✦ Quick note
+                    </strong>
+                    <br />
+                    This link will work for
+                    <strong style="color:#071a38;">
+                      1 hour
+                    </strong>.
+                    After that, you'll need to request a new one.
+                  </td>
+                </tr>
+              </table>
+
+
+              <!-- CTA -->
+
+              <table
+                cellpadding="0"
+                cellspacing="0"
+                border="0"
+                style="margin-bottom:34px;"
+              >
+                <tr>
+                  <td
+                    class="reset-button"
+                    style="
+                      background:#071a38;
+                      border:3px solid #071a38;
+                      border-radius:13px;
+                      box-shadow:5px 5px 0 #5424c7;
+                    "
+                  >
+
+                    <a
+                      href="${resetUrl}"
+                      style="
+                        display:inline-block;
+                        padding:16px 25px;
+                        color:#fffaf1;
+                        text-decoration:none;
+                        font-size:15px;
+                        line-height:1;
+                        font-weight:900;
+                        letter-spacing:.2px;
+                      "
+                    >
+                      Reset my password&nbsp; →
+                    </a>
+
+                  </td>
+                </tr>
+              </table>
+
+
+              <!-- FALLBACK URL -->
+
+              <div
+                style="
+                  font-size:12px;
+                  line-height:1.6;
+                  color:#6d7787;
+                "
+              >
+                If the button doesn't work, copy and paste this link
+                into your browser:
+              </div>
+
+              <div
+                style="
+                  margin-top:8px;
+                  padding:12px 14px;
+                  background:#f7efe2;
+                  border-radius:9px;
+                  font-size:11px;
+                  line-height:1.5;
+                  color:#53677c;
+                  word-break:break-all;
+                  overflow-wrap:anywhere;
+                "
+              >
+                ${resetUrl}
+              </div>
+
+            </td>
+          </tr>
+
+
+          <!-- =================================================
+               BOTTOM VISUAL STRIP
+          ================================================== -->
+
+          <tr>
+            <td
+              style="
+                padding:0;
+                border-top:3px solid #071a38;
+                background:#ff8068;
+              "
+            >
+
+              <table
+                width="100%"
+                cellpadding="0"
+                cellspacing="0"
+                border="0"
+              >
+                <tr>
+
+                  <td
+                    width="18%"
+                    style="
+                      height:12px;
+                      background:#ffd65a;
+                      border-right:3px solid #071a38;
+                    "
+                  >
+                    &nbsp;
+                  </td>
+
+                  <td
+                    width="42%"
+                    style="
+                      height:12px;
+                      background:#5424c7;
+                      border-right:3px solid #071a38;
+                    "
+                  >
+                    &nbsp;
+                  </td>
+
+                  <td
+                    width="40%"
+                    style="
+                      height:12px;
+                      background:#55c9c1;
+                    "
+                  >
+                    &nbsp;
+                  </td>
+
+                </tr>
+              </table>
+
+            </td>
+          </tr>
+
+        </table>
+
+
+        <!-- =================================================
+             FOOTER
+        ================================================== -->
+
+        <table
+          width="600"
+          cellpadding="0"
+          cellspacing="0"
+          border="0"
+          style="
+            width:600px;
+            max-width:600px;
+          "
+        >
+          <tr>
+            <td
+              align="center"
+              style="
+                padding:28px 20px 8px;
+                font-size:12px;
+                line-height:1.6;
+                color:#687386;
+              "
+            >
+              You received this email because a password reset
+              was requested for your Relate account.
+              <br />
+              If you didn't request this, you can safely ignore it.
+            </td>
+          </tr>
+
+          <tr>
+            <td
+              align="center"
+              style="
+                padding:8px 20px 20px;
+                font-size:11px;
+                font-weight:700;
+                letter-spacing:1px;
+                color:#9a8f82;
+              "
+            >
+              RELATE · LEARN DIFFERENTLY
+            </td>
+          </tr>
+        </table>
+
+      </td>
+    </tr>
+  </table>
+
+</body>
 </html>
   `.trim();
 }
 
-/**
- * Compose plain text content for password reset email.
- * Used as a fallback for email clients that don't support HTML.
- *
- * @param {string} resetUrl - Full reset URL including plaintext token query param
- * @returns {string} Plain text email body
- */
+
+/* =========================================================
+   PLAIN TEXT VERSION
+========================================================= */
+
 function composeResetEmailText(resetUrl) {
   return `
-Relate — Password Reset
+RELATE.
+LEARN DIFFERENTLY.
 
-Reset Your Password
+PASSWORD RESET
 
-We received a request to reset your password. Click the link below to create a new password.
-This link will expire in 1 hour.
+Let's get you back in.
 
+Someone requested a password reset for your Relate account.
+
+This reset link will work for 1 hour.
+
+Reset your password:
 ${resetUrl}
 
-Didn't request a password reset?
-You can safely ignore this email. Your password will not change unless you use the link above.
+If you didn't request this password reset, you can safely ignore this email.
 
-This is an automated message from Relate. Please do not reply to this email.
+— Relate
   `.trim();
 }
 
-/**
- * Send a password reset email.
- *
- * @param {object} options
- * @param {string} options.to        - Recipient email address
- * @param {string} options.resetUrl  - Full reset URL containing the plaintext token
- * @returns {Promise<void>}
- * @throws {Error} If email sending fails; error message does NOT expose plaintext token
- *
- * Requirements: 16.12 (email service), 16.13 (reset email flow), 16.16 (no plaintext token in logs)
- */
+
+/* =========================================================
+   SEND PASSWORD RESET EMAIL
+========================================================= */
+
 async function sendPasswordResetEmail({ to, resetUrl }) {
   if (!to || !resetUrl) {
     throw new Error('Email recipient and reset URL are required');
@@ -145,24 +574,37 @@ async function sendPasswordResetEmail({ to, resetUrl }) {
 
     const mailOptions = {
       from: process.env.EMAIL_FROM || 'noreply@relate.app',
-      to: to,
+
+      to,
+
       subject: 'Reset Your Relate Password',
+
       text: composeResetEmailText(resetUrl),
-      html: composeResetEmailHtml(resetUrl)
+
+      html: composeResetEmailHtml(resetUrl),
     };
 
-    // Send the email via Nodemailer
     await transporter.sendMail(mailOptions);
 
-    // Log success without exposing the plaintext token or resetUrl
-    console.log(`[EmailService] Password reset email sent to: ${to}`);
-    // NOTE: resetUrl (containing plaintext token) is NEVER logged — Requirement 16.16
+    console.log(
+      `[EmailService] Password reset email sent to: ${to}`
+    );
   } catch (error) {
-    // Log error details for debugging, but NEVER expose the plaintext token or resetUrl
-    console.error(`[EmailService] Failed to send password reset email to ${to}: ${error.message}`);
-    // Do NOT log error.response, error.command, or the full error object — these may expose credentials
-    throw new Error('Email could not be sent. Please try again later.');
+    console.error(
+      `[EmailService] Failed to send password reset email to ${to}: ${error.message}`
+    );
+
+    throw new Error(
+      'Email could not be sent. Please try again later.'
+    );
   }
 }
 
-module.exports = { sendPasswordResetEmail };
+
+/* =========================================================
+   EXPORT
+========================================================= */
+
+module.exports = {
+  sendPasswordResetEmail,
+};

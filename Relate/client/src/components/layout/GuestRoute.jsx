@@ -1,29 +1,26 @@
 import { Navigate } from 'react-router-dom'
+
 import { useAuth } from '../../hooks/useAuth'
 
 /**
- * GuestRoute - Wrapper for guest-only routes (login, register, forgot-password, reset-password).
+ * GuestRoute - Wrapper for guest-only routes.
  *
- * Prevents authenticated users from accessing these pages.
- * Redirects authenticated users to /library (the authenticated landing page).
- *
- * @param {Object} props
- * @param {React.ReactNode} props.children - Component to render if user is not authenticated
+ * Prevents authenticated users from accessing guest-only pages.
  */
 export function GuestRoute({ children }) {
-  const { user, loading } = useAuth()
+  const { user, initializing } = useAuth()
 
-  if (loading) {
-    // Defer navigation until loading is complete
+  // Only wait during the initial /auth/me check.
+  if (initializing) {
     return null
   }
 
+  // Authenticated users should not access guest-only pages.
   if (user !== null) {
-    // User is authenticated, redirect to library
-    return <Navigate to="/library" replace />
+    return <Navigate to="/" replace />
   }
 
-  // User is not authenticated, allow access to guest-only page
+  // Unauthenticated users can access the guest page.
   return children
 }
 

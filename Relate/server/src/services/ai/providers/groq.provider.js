@@ -90,10 +90,7 @@ async function call(prompt, timeoutMs) {
 
     return text;
   } catch (err) {
-    console.error('=== GROQ REQUEST ERROR ===');
-    console.error('error name:', err.name);
-    console.error('error message:', err.message);
-
+    
     throw err;
   } finally {
     clearTimeout(timer);

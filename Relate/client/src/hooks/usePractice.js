@@ -1,170 +1,227 @@
-import { useReducer, useCallback, useRef } from 'react'
+import { useCallback, useReducer } from 'react'
 
 import * as practiceApi from '../api/practice.api'
 
+
+// =========================================================
+// INITIAL STATE
+// =========================================================
+
 const initialState = {
   state: 'idle',
+
+  // Current complete question set for this practice session.
   questions: [],
+
   currentIndex: 0,
+
+  // Answers/evaluations use the same question indexes.
   answers: [],
   evaluations: [],
+
   error: null,
   evalLoading: false,
+
+  // IMPORTANT:
+  // null  = this is a brand-new practice session
+  // value = this practice session has already been created
+  //         and Generate More must update that same session.
+  sessionId: null,
 }
 
-const ACTIONS = {
-  START_LOADING_QUESTIONS: 'START_LOADING_QUESTIONS',
-  SET_QUESTIONS: 'SET_QUESTIONS',
-  QUESTIONS_LOAD_ERROR: 'QUESTIONS_LOAD_ERROR',
 
-  START_EVALUATING: 'START_EVALUATING',
+// =========================================================
+// ACTIONS
+// =========================================================
+
+const ACTIONS = {
+  LOAD_QUESTIONS: 'LOAD_QUESTIONS',
+  SET_QUESTIONS: 'SET_QUESTIONS',
+  APPEND_QUESTIONS: 'APPEND_QUESTIONS',
+
+  SET_ANSWER: 'SET_ANSWER',
   SET_EVALUATION: 'SET_EVALUATION',
-  EVALUATION_TIMEOUT: 'EVALUATION_TIMEOUT',
-  RETRY_EVALUATION: 'RETRY_EVALUATION',
 
   NEXT_QUESTION: 'NEXT_QUESTION',
-  MOVE_TO_SUMMARY: 'MOVE_TO_SUMMARY',
 
-  START_SAVING: 'START_SAVING',
+  EVALUATION_LOADING: 'EVALUATION_LOADING',
+
+  SET_ERROR: 'SET_ERROR',
+  CLEAR_ERROR: 'CLEAR_ERROR',
+
+  SESSION_SAVING: 'SESSION_SAVING',
   SESSION_SAVED: 'SESSION_SAVED',
   SESSION_SAVE_ERROR: 'SESSION_SAVE_ERROR',
 
-  RESET_PRACTICE: 'RESET_PRACTICE',
-  CLEAR_ERROR: 'CLEAR_ERROR',
+  SET_SESSION_ID:'SET_SESSION_ID',
+
+  RESET: 'RESET',
 }
 
-function practiceReducer(state, action) {
+
+// =========================================================
+// REDUCER
+// =========================================================
+
+function reducer(state, action) {
   switch (action.type) {
-    case ACTIONS.START_LOADING_QUESTIONS:
-      return {
-        ...initialState,
-        state: 'loading_questions',
-      }
 
-    case ACTIONS.SET_QUESTIONS: {
-      const questions = Array.isArray(action.payload)
-        ? action.payload
-        : []
-
+    // -------------------------------------------------------
+    // NEW PRACTICE SESSION
+    // -------------------------------------------------------
+    case ACTIONS.SET_QUESTIONS:
       return {
         ...state,
-        state: questions.length > 0
-          ? 'questions_ready'
-          : 'idle',
-        questions,
+
+        state: 'questions_ready',
+
+        questions: Array.isArray(action.questions)
+          ? action.questions
+          : [],
+
         currentIndex: 0,
+
         answers: [],
         evaluations: [],
+
         error: null,
         evalLoading: false,
+
+        // CRITICAL:
+        // SET_QUESTIONS represents a genuinely NEW practice.
+        // Therefore the previous session ID must be removed.
+        sessionId: null,
+      }
+
+
+    // -------------------------------------------------------
+    // GENERATE MORE
+    // -------------------------------------------------------
+    case ACTIONS.APPEND_QUESTIONS: {
+      const existingQuestions = Array.isArray(state.questions)
+        ? state.questions
+        : []
+
+      const newQuestions = Array.isArray(action.questions)
+        ? action.questions
+        : []
+
+      if (newQuestions.length === 0) {
+        return state
+      }
+
+      return {
+        ...state,
+
+        state: 'questions_ready',
+
+        // Keep ALL old questions and append the new ones.
+        questions: [
+          ...existingQuestions,
+          ...newQuestions,
+        ],
+
+        // IMPORTANT:
+        // Start exactly where the old question set ended.
+        currentIndex: existingQuestions.length,
+
+        // Do NOT reset old answers.
+        answers: state.answers,
+
+        // Do NOT reset old evaluations.
+        evaluations: state.evaluations,
+
+        error: null,
+        evalLoading: false,
+
+        // IMPORTANT:
+        // Keep the existing session ID.
+        sessionId: state.sessionId,
       }
     }
 
-    case ACTIONS.QUESTIONS_LOAD_ERROR:
-      return {
-        ...state,
-        state: 'idle',
-        error: action.payload,
-        evalLoading: false,
+
+    // -------------------------------------------------------
+    // SET ANSWER
+    // -------------------------------------------------------
+    case ACTIONS.SET_ANSWER: {
+      const answers = [...state.answers]
+
+      answers[action.index] = {
+        questionIndex: action.index,
+        userAnswer: action.userAnswer,
       }
 
-    case ACTIONS.START_EVALUATING:
       return {
         ...state,
-        state: 'evaluating',
-        evalLoading: true,
-        error: null,
+        answers,
       }
+    }
 
+
+    // -------------------------------------------------------
+    // SET EVALUATION
+    // -------------------------------------------------------
     case ACTIONS.SET_EVALUATION: {
-      const updatedAnswers = [...state.answers]
+      const evaluations = [...state.evaluations]
 
-      updatedAnswers[state.currentIndex] =
-        action.payload.userAnswer
-
-      const updatedEvaluations = [...state.evaluations]
-
-      updatedEvaluations[state.currentIndex] = {
-        ...action.payload.evaluation,
-        userAnswer: action.payload.userAnswer,
-        questionType: action.payload.questionType,
+      evaluations[action.index] = {
+        questionIndex: action.index,
+        ...action.evaluation,
       }
 
       return {
         ...state,
-        state: 'evaluated',
-        answers: updatedAnswers,
-        evaluations: updatedEvaluations,
-        evalLoading: false,
-        error: null,
+        evaluations,
       }
     }
 
-    case ACTIONS.EVALUATION_TIMEOUT:
-      return {
-        ...state,
-        state: 'evaluated',
-        evalLoading: false,
-        error: action.payload,
-      }
 
-    case ACTIONS.RETRY_EVALUATION:
-      return {
-        ...state,
-        state: 'evaluating',
-        evalLoading: true,
-        error: null,
-      }
-
+    // -------------------------------------------------------
+    // NEXT QUESTION
+    // -------------------------------------------------------
     case ACTIONS.NEXT_QUESTION: {
-      const nextIndex = state.currentIndex + 1
+      const lastQuestion =
+        state.currentIndex >= state.questions.length - 1
 
-      const allAnswered =
-        nextIndex >= state.questions.length
+      if (lastQuestion) {
+        return {
+          ...state,
+          state: 'summary',
+          evalLoading: false,
+        }
+      }
 
       return {
         ...state,
-        currentIndex: nextIndex,
-        state: allAnswered
-          ? 'summary'
-          : 'questions_ready',
+        currentIndex: state.currentIndex + 1,
+        evalLoading: false,
         error: null,
       }
     }
 
-    case ACTIONS.MOVE_TO_SUMMARY:
+
+    // -------------------------------------------------------
+    // EVALUATION LOADING
+    // -------------------------------------------------------
+    case ACTIONS.EVALUATION_LOADING:
       return {
         ...state,
-        state: 'summary',
-        error: null,
+        evalLoading: action.loading,
       }
 
-    case ACTIONS.START_SAVING:
+
+    // -------------------------------------------------------
+    // ERROR
+    // -------------------------------------------------------
+    case ACTIONS.SET_ERROR:
       return {
         ...state,
-        state: 'saving',
-        error: null,
+        state: action.state || state.state,
+        error: action.error,
+        evalLoading: false,
       }
 
-    case ACTIONS.SESSION_SAVED:
-      return {
-        ...state,
-        state: 'saved',
-        error: null,
-      }
-
-    case ACTIONS.SESSION_SAVE_ERROR:
-      return {
-        ...state,
-        state: 'save_error',
-        error: action.payload,
-      }
-
-    case ACTIONS.RESET_PRACTICE:
-      return {
-        ...initialState,
-        state: 'idle',
-      }
 
     case ACTIONS.CLEAR_ERROR:
       return {
@@ -172,153 +229,125 @@ function practiceReducer(state, action) {
         error: null,
       }
 
+
+    // -------------------------------------------------------
+    // SESSION SAVING
+    // -------------------------------------------------------
+    case ACTIONS.SESSION_SAVING:
+      return {
+        ...state,
+        state: 'saving',
+        error: null,
+      }
+
+
+    // -------------------------------------------------------
+    // SESSION SAVED
+    // -------------------------------------------------------
+    case ACTIONS.SESSION_SAVED:
+      return {
+        ...state,
+        state: 'saved',
+        sessionId:
+          action.sessionId || state.sessionId,
+        error: null,
+      }
+
+
+    // -------------------------------------------------------
+    // SESSION SAVE ERROR
+    // -------------------------------------------------------
+    case ACTIONS.SESSION_SAVE_ERROR:
+      return {
+        ...state,
+        state: 'save_error',
+        error: action.error,
+      }
+
+
+    // -------------------------------------------------------
+    // SET SESSION ID
+    // -------------------------------------------------------
+    case ACTIONS.SET_SESSION_ID:
+      return {
+        ...state,
+        sessionId: action.sessionId || null,
+      }
+
+
+    // -------------------------------------------------------
+    // RESET EVERYTHING
+    // -------------------------------------------------------
+    case ACTIONS.RESET:
+      return {
+        ...initialState,
+      }
+
+
     default:
       return state
   }
 }
 
-/**
- * Convert a multiple-choice answer into a user-friendly
- * display string.
- *
- * Supports:
- * - option-0
- * - A (Polling)
- * - Polling
- */
-function formatAnswerForDisplay(question, userAnswer) {
-  if (
-    !question ||
-    question.type !== 'multiple-choice'
-  ) {
-    return typeof userAnswer === 'string'
-      ? userAnswer.trim()
-      : ''
-  }
 
-  if (!Array.isArray(question.options)) {
-    return typeof userAnswer === 'string'
-      ? userAnswer.trim()
-      : ''
-  }
-
-  const answer =
-    typeof userAnswer === 'string'
-      ? userAnswer.trim()
-      : ''
-
-  let index = -1
-
-  const optionIdMatch =
-    answer.match(/^option-(\d+)$/i)
-
-  if (optionIdMatch) {
-    index = Number(optionIdMatch[1])
-  }
-
-  const letterMatch =
-    answer.match(/^([A-F])\s*\(/i)
-
-  if (index < 0 && letterMatch) {
-    index =
-      letterMatch[1]
-        .toUpperCase()
-        .charCodeAt(0) - 65
-  }
-
-  if (index < 0) {
-    index = question.options.findIndex(
-      (option) =>
-        typeof option?.text === 'string' &&
-        option.text.trim().toLowerCase() ===
-          answer.toLowerCase()
-    )
-  }
-
-  if (
-    index >= 0 &&
-    index < question.options.length
-  ) {
-    const option = question.options[index]
-    const letter = String.fromCharCode(65 + index)
-
-    return `${letter} (${option.text})`
-  }
-
-  return answer
-}
+// =========================================================
+// HOOK
+// =========================================================
 
 export function usePractice() {
   const [state, dispatch] = useReducer(
-    practiceReducer,
+    reducer,
     initialState
   )
 
-  /**
-   * Every question-generation operation gets
-   * a unique ID.
-   *
-   * If an older request finishes after a newer
-   * operation has started, its result is ignored.
-   */
-  const questionsRequestIdRef = useRef(0)
 
-  /**
-   * Generate a question set.
-   *
-   * This function does NOT automatically run.
-   * PracticeSessionPage decides when it should
-   * be called.
-   */
+  // =======================================================
+  // LOAD QUESTIONS
+  // =======================================================
+
   const loadQuestions = useCallback(
     async (analogyData) => {
-      const requestId =
-        ++questionsRequestIdRef.current
+      if (!analogyData) {
+        throw new Error('Analogy data is required.')
+      }
 
       dispatch({
-        type: ACTIONS.START_LOADING_QUESTIONS,
+        type: ACTIONS.LOAD_QUESTIONS,
+      })
+
+      dispatch({
+        type: ACTIONS.SET_ERROR,
+        error: null,
       })
 
       try {
         const response =
           await practiceApi.generatePracticeQuestions({
             analogyId:
-              analogyData?._id ||
-              analogyData?.id,
+              analogyData._id ||
+              analogyData.id,
 
             concept:
-              analogyData?.concept,
+              analogyData.concept,
 
             analogyWorld:
-              analogyData?.analogyWorld,
+              analogyData.analogyWorld,
 
             nodes:
-              analogyData?.nodes,
+              analogyData.nodes,
 
             mappings:
-              analogyData?.mappings,
+              analogyData.mappings,
 
             relationships:
-              analogyData?.relationships,
+              analogyData.relationships,
 
             explanation:
-              analogyData?.explanation,
+              analogyData.explanation,
 
             limitations:
-              analogyData?.limitations,
+              analogyData.limitations,
           })
-
-        /**
-         * A newer question operation has started.
-         * Never allow this older response to replace
-         * the newer question set.
-         */
-        if (
-          requestId !==
-          questionsRequestIdRef.current
-        ) {
-          return response
-        }
 
         const questions =
           Array.isArray(response?.questions)
@@ -326,47 +355,28 @@ export function usePractice() {
             : []
 
         if (questions.length === 0) {
-          const error = {
-            message:
-              'No practice questions were generated.',
-          }
-
-          dispatch({
-            type: ACTIONS.QUESTIONS_LOAD_ERROR,
-            payload: error,
-          })
-
-          throw new Error(error.message)
+          throw new Error(
+            'No practice questions were generated.'
+          )
         }
 
+        // SET_QUESTIONS deliberately creates a NEW session.
         dispatch({
           type: ACTIONS.SET_QUESTIONS,
-          payload: questions,
+          questions,
         })
 
-        return response
+        return questions
       } catch (err) {
-        /**
-         * Ignore an error belonging to an old
-         * generation request.
-         */
-        if (
-          requestId !==
-          questionsRequestIdRef.current
-        ) {
-          throw err
-        }
-
-        const errorMessage =
+        const message =
           err.response?.data?.error?.message ||
           err.message ||
-          'Failed to load questions'
+          'Failed to generate practice questions.'
 
         dispatch({
-          type: ACTIONS.QUESTIONS_LOAD_ERROR,
-          payload: {
-            message: errorMessage,
-          },
+          type: ACTIONS.SET_ERROR,
+          state: 'error',
+          error: message,
         })
 
         throw err
@@ -375,212 +385,212 @@ export function usePractice() {
     []
   )
 
-  /**
-   * Replace the current question set directly.
-   *
-   * Used by Generate More Questions.
-   *
-   * IMPORTANT:
-   * This does NOT make an API request.
-   */
-  const setQuestions = useCallback(
-    (questions) => {
-      /**
-       * Invalidate every currently running
-       * question-generation request.
-       */
-      ++questionsRequestIdRef.current
 
-      const nextQuestions =
-        Array.isArray(questions)
-          ? questions
-          : []
+  // =======================================================
+  // APPEND GENERATED QUESTIONS
+  // =======================================================
+
+  const appendQuestions = useCallback(
+    (questions) => {
+      if (
+        !Array.isArray(questions) ||
+        questions.length === 0
+      ) {
+        return
+      }
 
       dispatch({
-        type: ACTIONS.SET_QUESTIONS,
-        payload: nextQuestions,
+        type: ACTIONS.APPEND_QUESTIONS,
+        questions,
       })
     },
     []
   )
+
+
+  // =======================================================
+  // SET QUESTIONS
+  //
+  // Kept for compatibility.
+  // It now ALWAYS means "new practice".
+  // =======================================================
+
+  const setQuestions = useCallback(
+    (questions) => {
+      dispatch({
+        type: ACTIONS.SET_QUESTIONS,
+        questions,
+      })
+    },
+    []
+  )
+
+
+  // =======================================================
+  // SUBMIT ANSWER
+  // =======================================================
 
   const submitAnswer = useCallback(
     async (userAnswer) => {
-      const currentQuestion =
-        state.questions[state.currentIndex]
+      const index = state.currentIndex
+      const question = state.questions[index]
 
-      if (!currentQuestion) {
-        return
+      if (!question) {
+        throw new Error(
+          'Current practice question not found.'
+        )
       }
 
-      const displayAnswer =
-        formatAnswerForDisplay(
-          currentQuestion,
-          userAnswer
-        )
+      // Store answer locally first.
+      dispatch({
+        type: ACTIONS.SET_ANSWER,
+        index,
+        userAnswer,
+      })
 
       dispatch({
-        type: ACTIONS.START_EVALUATING,
+        type: ACTIONS.EVALUATION_LOADING,
+        loading: true,
+      })
+
+      dispatch({
+        type: ACTIONS.CLEAR_ERROR,
       })
 
       try {
         const response =
-          await practiceApi.evaluateAnswer({
-            question: currentQuestion,
+          await practiceApi.evaluatePracticeAnswer({
+            question,
             userAnswer,
           })
 
+        const evaluation =
+          response?.evaluation ||
+          response
+
         dispatch({
           type: ACTIONS.SET_EVALUATION,
-          payload: {
-            userAnswer: displayAnswer,
-            evaluation: response.evaluation,
-            questionType: currentQuestion.type,
-          },
+          index,
+          evaluation,
         })
-      } catch (err) {
-        const isTimeout =
-          err.code === 'ECONNABORTED' ||
-          err.message
-            ?.toLowerCase()
-            .includes('timeout')
 
-      dispatch({
-  type: ACTIONS.EVALUATION_TIMEOUT,
-  payload: isTimeout
-    ? 'Evaluation timed out. Please try again.'
-    : err.response?.data?.error?.message ||
-      'Failed to evaluate answer',
-})
+        dispatch({
+          type: ACTIONS.EVALUATION_LOADING,
+          loading: false,
+        })
+
+        return evaluation
+      } catch (err) {
+        const message =
+          err.response?.data?.error?.message ||
+          err.message ||
+          'Failed to evaluate answer.'
+
+        dispatch({
+          type: ACTIONS.SET_ERROR,
+          error: message,
+        })
 
         throw err
       }
     },
     [
-      state.questions,
       state.currentIndex,
+      state.questions,
     ]
   )
+
+
+  // =======================================================
+  // MOVE TO NEXT QUESTION
+  // =======================================================
+
+  const moveToNextQuestion = useCallback(() => {
+    dispatch({
+      type: ACTIONS.NEXT_QUESTION,
+    })
+  }, [])
+
+
+  // =======================================================
+  // RETRY EVALUATION
+  // =======================================================
 
   const retryEvaluation = useCallback(
     async () => {
-      const currentQuestion =
-        state.questions[state.currentIndex]
+      const index = state.currentIndex
+      const answer = state.answers[index]
+      const question = state.questions[index]
 
-      const userAnswer =
-        state.answers[state.currentIndex]
-
-      if (
-        !currentQuestion ||
-        !userAnswer
-      ) {
-        return
+      if (!question || !answer) {
+        throw new Error(
+          'Question or previous answer not found.'
+        )
       }
 
       dispatch({
-        type: ACTIONS.RETRY_EVALUATION,
+        type: ACTIONS.EVALUATION_LOADING,
+        loading: true,
+      })
+
+      dispatch({
+        type: ACTIONS.CLEAR_ERROR,
       })
 
       try {
         const response =
-          await practiceApi.evaluateAnswer({
-            question: currentQuestion,
-            userAnswer,
+          await practiceApi.evaluatePracticeAnswer({
+            question,
+            userAnswer: answer.userAnswer,
           })
 
-        const displayAnswer =
-          formatAnswerForDisplay(
-            currentQuestion,
-            userAnswer
-          )
+        const evaluation =
+          response?.evaluation ||
+          response
 
         dispatch({
           type: ACTIONS.SET_EVALUATION,
-          payload: {
-            userAnswer: displayAnswer,
-            evaluation: response.evaluation,
-            questionType: currentQuestion.type,
-          },
+          index,
+          evaluation,
         })
-      } catch (err) {
-        const isTimeout =
-          err.code === 'ECONNABORTED' ||
-          err.message
-            ?.toLowerCase()
-            .includes('timeout')
 
         dispatch({
-          type: ACTIONS.EVALUATION_TIMEOUT,
-          payload: {
-            message: isTimeout
-              ? 'Evaluation timed out. Please try again.'
-              : err.response?.data?.error?.message ||
-                'Failed to evaluate answer',
-            dismissible: true,
-          },
+          type: ACTIONS.EVALUATION_LOADING,
+          loading: false,
+        })
+
+        return evaluation
+      } catch (err) {
+        const message =
+          err.response?.data?.error?.message ||
+          err.message ||
+          'Failed to retry evaluation.'
+
+        dispatch({
+          type: ACTIONS.SET_ERROR,
+          error: message,
         })
 
         throw err
       }
     },
     [
-      state.answers,
       state.currentIndex,
+      state.answers,
       state.questions,
     ]
   )
 
-  const nextQuestion = useCallback(() => {
-    if (
-      state.currentIndex <
-      state.questions.length - 1
-    ) {
-      dispatch({
-        type: ACTIONS.NEXT_QUESTION,
-      })
 
-      return
-    }
-
-    dispatch({
-      type: ACTIONS.MOVE_TO_SUMMARY,
-    })
-  }, [
-    state.currentIndex,
-    state.questions.length,
-  ])
-
-  const moveToNextQuestion =
-    useCallback(() => {
-      if (
-        state.currentIndex <
-        state.questions.length - 1
-      ) {
-        dispatch({
-          type: ACTIONS.NEXT_QUESTION,
-        })
-
-        return {
-          nextIndex:
-            state.currentIndex + 1,
-          allAnswered: false,
-        }
-      }
-
-      dispatch({
-        type: ACTIONS.MOVE_TO_SUMMARY,
-      })
-
-      return {
-        allAnswered: true,
-      }
-    }, [
-      state.currentIndex,
-      state.questions.length,
-    ])
+  // =======================================================
+  // SCORE
+  // =======================================================
 
   const calculateScore = useCallback(() => {
-    if (state.questions.length === 0) {
+    const total =
+      state.questions.length
+
+    if (total === 0) {
       return 0
     }
 
@@ -591,237 +601,277 @@ export function usePractice() {
       ).length
 
     return Math.round(
-      (correctCount /
-        state.questions.length) *
-        100
+      (correctCount / total) * 100
     )
-  }, [
-    state.questions.length,
-    state.evaluations,
-  ])
+  }, [state.questions, state.evaluations])
 
-  const getMisconceptions =
-    useCallback(() => {
-      return state.evaluations
-        .map((evaluation, index) => ({
-          questionIndex: index,
 
-          misconception:
-            evaluation?.misconception ||
-            null,
+  // =======================================================
+  // MISCONCEPTIONS
+  // =======================================================
 
-          mappingLabel:
-            state.questions[index]
-              ?.mappingLabel || '',
-        }))
-        .filter(
-          (item) => item.misconception
-        )
-    }, [
-      state.evaluations,
-      state.questions,
-    ])
-
-  const getMappingsByCorrectness =
-    useCallback(() => {
-      const understood = new Set()
-      const struggled = new Set()
-
-      state.evaluations.forEach(
-        (evaluation, index) => {
-          const mappingLabel =
-            state.questions[index]
-              ?.mappingLabel
-
-          if (!mappingLabel) {
-            return
-          }
-
-          if (evaluation?.correct) {
-            understood.add(mappingLabel)
-          } else {
-            struggled.add(mappingLabel)
-          }
-        }
+  const getMisconceptions = useCallback(() => {
+    return state.evaluations
+      .filter(
+        (evaluation) =>
+          evaluation?.correct === false &&
+          evaluation?.misconception
       )
+      .map(
+        (evaluation) =>
+          evaluation.misconception
+      )
+  }, [state.evaluations])
 
-      return {
-        understood:
-          Array.from(understood),
 
-        struggled:
-          Array.from(struggled),
+  // =======================================================
+  // MAPPINGS BY CORRECTNESS
+  // =======================================================
+
+  const getMappingsByCorrectness = useCallback(() => {
+    const understood = []
+    const struggled = []
+
+    state.evaluations.forEach(
+      (evaluation) => {
+        if (!evaluation?.mappingLabel) {
+          return
+        }
+
+        if (evaluation.correct) {
+          understood.push(
+            evaluation.mappingLabel
+          )
+        } else {
+          struggled.push(
+            evaluation.mappingLabel
+          )
+        }
       }
-    }, [
-      state.evaluations,
+    )
+
+    return {
+      understood: [
+        ...new Set(understood),
+      ],
+
+      struggled: [
+        ...new Set(struggled),
+      ],
+    }
+  }, [state.evaluations])
+
+
+  // =======================================================
+  // SAVE SESSION
+  // =======================================================
+
+  const savePracticeSession = useCallback(
+    async (analogyId) => {
+      if (!analogyId) {
+        throw new Error(
+          'Analogy ID is required to save a practice session.'
+        )
+      }
+
+      if (state.questions.length === 0) {
+        throw new Error(
+          'Cannot save an empty practice session.'
+        )
+      }
+
+      dispatch({
+        type: ACTIONS.SESSION_SAVING,
+      })
+
+      const formattedAnswers =
+        state.answers
+          .filter(Boolean)
+          .map((answer, index) => ({
+            questionIndex:
+              Number.isInteger(
+                answer?.questionIndex
+              )
+                ? answer.questionIndex
+                : index,
+
+            userAnswer:
+              answer?.userAnswer ?? '',
+          }))
+
+      const formattedEvaluations =
+        state.evaluations
+          .filter(Boolean)
+          .map((evaluation, index) => ({
+            questionIndex:
+              Number.isInteger(
+                evaluation?.questionIndex
+              )
+                ? evaluation.questionIndex
+                : index,
+
+            correct:
+              evaluation?.correct === true,
+
+            feedback:
+              evaluation?.feedback || '',
+
+            correctAnswer:
+              evaluation?.correctAnswer || '',
+
+            explanation:
+              evaluation?.explanation || '',
+
+            mappingLabel:
+              evaluation?.mappingLabel || '',
+
+            encouragement:
+              evaluation?.encouragement || '',
+
+            misconception:
+              evaluation?.misconception || null,
+          }))
+
+      const score = calculateScore()
+
+      const misconceptions =
+        getMisconceptions()
+
+      try {
+        // ---------------------------------------------------
+        // FIRST COMPLETION
+        //
+        // No session ID means this is a brand-new session.
+        // POST creates a new Mongo document.
+        // ---------------------------------------------------
+
+        if (!state.sessionId) {
+          const response =
+            await practiceApi.savePracticeSession({
+              analogyId,
+
+              questions:
+                state.questions,
+
+              answers:
+                formattedAnswers,
+
+              evaluations:
+                formattedEvaluations,
+
+              score,
+
+              misconceptions,
+
+              completedAt:
+                new Date().toISOString(),
+            })
+
+          const sessionId =
+            response?.sessionId ||
+            response?.session?._id ||
+            response?.session?._id?.toString()
+
+          if (!sessionId) {
+            throw new Error(
+              'Practice session was saved but no session ID was returned.'
+            )
+          }
+
+          dispatch({
+            type: ACTIONS.SESSION_SAVED,
+            sessionId,
+          })
+
+          return sessionId
+        }
+
+
+        // ---------------------------------------------------
+        // GENERATE MORE COMPLETION
+        //
+        // Existing session ID means:
+        // UPDATE THE SAME SESSION.
+        // ---------------------------------------------------
+
+        const response =
+          await practiceApi.updatePracticeSession(
+            state.sessionId,
+            {
+              analogyId,
+
+              questions:
+                state.questions,
+
+              answers:
+                formattedAnswers,
+
+              evaluations:
+                formattedEvaluations,
+
+              score,
+
+              misconceptions,
+
+              completedAt:
+                new Date().toISOString(),
+            }
+          )
+
+        const sessionId =
+          response?.sessionId ||
+          state.sessionId
+
+        dispatch({
+          type: ACTIONS.SESSION_SAVED,
+          sessionId,
+        })
+
+        return sessionId
+
+      } catch (err) {
+        const message =
+          err.response?.data?.error?.message ||
+          err.message ||
+          'Failed to save practice session.'
+
+        dispatch({
+          type: ACTIONS.SESSION_SAVE_ERROR,
+          error: message,
+        })
+
+        throw err
+      }
+    },
+    [
       state.questions,
-    ])
+      state.answers,
+      state.evaluations,
+      state.sessionId,
+      calculateScore,
+      getMisconceptions,
+    ]
+  )
 
-  const savePracticeSession =
-    useCallback(
-      async (analogyId) => {
-        dispatch({
-          type: ACTIONS.START_SAVING,
-        })
 
-        try {
-          const score =
-            calculateScore()
+  // =======================================================
+  // RETRY SAVE
+  // =======================================================
 
-          const misconceptions =
-            getMisconceptions()
+  const retrySaveSession = useCallback(
+    async (analogyId) => {
+      // Use the exact same save logic.
+      return savePracticeSession(
+        analogyId
+      )
+    },
+    [savePracticeSession]
+  )
 
-          const formattedAnswers =
-            state.answers.map(
-              (answer, index) => ({
-                questionIndex: index,
-                userAnswer: answer,
-              })
-            )
 
-          const formattedEvaluations =
-            state.evaluations.map(
-              (evaluation, index) => ({
-                questionIndex: index,
-                ...evaluation,
-              })
-            )
-
-          const response =
-            await practiceApi.savePracticeSession(
-              {
-                analogyId,
-                questions:
-                  state.questions,
-                answers:
-                  formattedAnswers,
-                evaluations:
-                  formattedEvaluations,
-                score,
-                misconceptions,
-                completedAt:
-                  new Date().toISOString(),
-              }
-            )
-
-          dispatch({
-            type: ACTIONS.SESSION_SAVED,
-          })
-
-          return response.sessionId
-        } catch (err) {
-          const errorMessage =
-            err.response?.data?.error?.message ||
-            'Failed to save session'
-
-          dispatch({
-            type: ACTIONS.SESSION_SAVE_ERROR,
-            payload: {
-              message: errorMessage,
-              showRetry: true,
-            },
-          })
-
-          throw err
-        }
-      },
-      [
-        state.questions,
-        state.answers,
-        state.evaluations,
-        calculateScore,
-        getMisconceptions,
-      ]
-    )
-
-  const retrySaveSession =
-    useCallback(
-      async (analogyId) => {
-        dispatch({
-          type: ACTIONS.START_SAVING,
-        })
-
-        try {
-          const score =
-            calculateScore()
-
-          const misconceptions =
-            getMisconceptions()
-
-          const formattedAnswers =
-            state.answers.map(
-              (answer, index) => ({
-                questionIndex: index,
-                userAnswer: answer,
-              })
-            )
-
-          const formattedEvaluations =
-            state.evaluations.map(
-              (evaluation, index) => ({
-                questionIndex: index,
-                ...evaluation,
-              })
-            )
-
-          const response =
-            await practiceApi.savePracticeSession(
-              {
-                analogyId,
-                questions:
-                  state.questions,
-                answers:
-                  formattedAnswers,
-                evaluations:
-                  formattedEvaluations,
-                score,
-                misconceptions,
-                completedAt:
-                  new Date().toISOString(),
-              }
-            )
-
-          dispatch({
-            type: ACTIONS.SESSION_SAVED,
-          })
-
-          return response.sessionId
-        } catch (err) {
-          const errorMessage =
-            err.response?.data?.error?.message ||
-            'Failed to save session'
-
-          dispatch({
-            type: ACTIONS.SESSION_SAVE_ERROR,
-            payload: {
-              message: errorMessage,
-              showRetry: true,
-            },
-          })
-
-          throw err
-        }
-      },
-      [
-        state.questions,
-        state.answers,
-        state.evaluations,
-        calculateScore,
-        getMisconceptions,
-      ]
-    )
-
-  const resetPractice = useCallback(() => {
-    /**
-     * Invalidate any question-generation request
-     * that is still running.
-     */
-    ++questionsRequestIdRef.current
-
-    dispatch({
-      type: ACTIONS.RESET_PRACTICE,
-    })
-  }, [])
+  // =======================================================
+  // CLEAR ERROR
+  // =======================================================
 
   const clearError = useCallback(() => {
     dispatch({
@@ -829,43 +879,49 @@ export function usePractice() {
     })
   }, [])
 
+
+  // =======================================================
+  // RESET PRACTICE
+  // =======================================================
+
+  const resetPractice = useCallback(() => {
+    dispatch({
+      type: ACTIONS.RESET,
+    })
+  }, [])
+
+
+  // =======================================================
+  // RETURN
+  // =======================================================
+
   return {
-    state: state.state,
-
-    questions:
-      state.questions,
-
-    currentIndex:
-      state.currentIndex,
-
-    answers:
-      state.answers,
-
-    evaluations:
-      state.evaluations,
-
-    error:
-      state.error,
-
-    evalLoading:
-      state.evalLoading,
+    ...state,
 
     loadQuestions,
+
     setQuestions,
 
-    submitAnswer,
-    retryEvaluation,
+    appendQuestions,
 
-    nextQuestion,
+    submitAnswer,
+
     moveToNextQuestion,
 
+    retryEvaluation,
+
     calculateScore,
+
+    getMisconceptions,
+
     getMappingsByCorrectness,
 
     savePracticeSession,
+
     retrySaveSession,
 
-    resetPractice,
     clearError,
+
+    resetPractice,
   }
 }
