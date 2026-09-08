@@ -735,6 +735,7 @@ export default function AnalogyPage() {
                   nodes={analogyData.nodes || []}
                   mappings={analogyData.mappings || []}
                   analogyWorld={analogyData.analogyWorld}
+                    concept={analogyData.concept}
                 />
               </div>
 

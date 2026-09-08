@@ -24,6 +24,7 @@ export default function VisualModel({
   nodes = [],
   mappings = [],
   analogyWorld,
+  concept,
 }) {
   /**
    * Build display rows from mappings.
@@ -91,7 +92,7 @@ export default function VisualModel({
           </span>
 
           <span className="visual-model__main-title">
-            SFTP protocol
+           {concept || 'Your concept'}
           </span>
         </div>
 
