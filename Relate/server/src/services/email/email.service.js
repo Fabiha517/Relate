@@ -554,13 +554,16 @@ async function sendViaAgentMail({
       `AgentMail request failed with status ${response.status}`;
 
     try {
-      const errorBody = await response.json();
+      const errorBody = await response.text()
 
-      if (errorBody?.message) {
-        errorMessage += `: ${errorBody.message}`;
-      } else if (errorBody?.detail) {
-        errorMessage += `: ${errorBody.detail}`;
-      }
+  console.error('[AgentMail] Send failed:', {
+    status: response.status,
+    body: errorBody,
+  })
+
+  throw new Error(
+    `AgentMail request failed with status ${response.status}: ${errorBody}`
+  )
     } catch {
       // Ignore invalid/non-JSON error response.
     }
