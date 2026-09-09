@@ -45,7 +45,7 @@ export default function App() {
     <Router>
       <ScrollToTop/>  
       <AuthProvider>
-        <div className="app min-h-screen bg-[#f8f1e5] relative">
+        <div className="app min-h-screen  bg-[#f8f1e5]  relative overflow-hidden">
            {/* DECORATIVE BACKGROUND ELEMENTS */}
       <div className="absolute -top-20 -left-20 w-48 h-48 bg-yellow-300 rounded-full opacity-25 blur-3xl"></div>
       <div className="absolute -bottom-32 -right-32 w-64 h-64 bg-purple-700 rounded-full opacity-20 blur-3xl"></div>
