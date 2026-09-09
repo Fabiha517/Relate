@@ -1,9 +1,9 @@
-import { useEffect } from 'react'
+
 import {
   BrowserRouter as Router,
   Routes,
   Route,
-  useLocation,
+
 } from 'react-router-dom'
 
 import { AuthProvider } from './context/AuthContext'
@@ -27,15 +27,11 @@ import ProfilePage from './pages/ProfilePage'
 
 
 function AppContent() {
-  const location = useLocation()
 
-  useEffect(() => {
-    window.scrollTo(0, 0)
-  }, [location.pathname])
 
   return (
     <AuthProvider>
-      <div className="app min-h-screen bg-[#f8f1e5] relative overflow-x-hidden">
+      <div className="app min-h-screen bg-[#f8f1e5] relative overflow-hidden">
 
         {/* DECORATIVE BACKGROUND ELEMENTS */}
 
