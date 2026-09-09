@@ -1,9 +1,10 @@
-import { BrowserRouter as Router, Routes, Route } from 'react-router-dom'
+import { BrowserRouter as Router, Routes, Route,useLocation } from 'react-router-dom'
+import { useEffect } from 'react'
 import { AuthProvider } from './context/AuthContext'
 import { Navbar } from './components/layout/Navbar'
 import { ProtectedRoute } from './components/layout/ProtectedRoute'
 import { GuestRoute } from './components/layout/GuestRoute'
-import ScrollToTop from './components/layout/ScrollToTop'
+
 // Pages
 import HomePage from './pages/HomePage'
 import AnalogyPage from './pages/AnalogyPage'
@@ -40,14 +41,17 @@ import ProfilePage from './pages/ProfilePage'
  *
  * Requirements: 9.1, 10.5
  */
- useEffect(() => {
-    window.scrollTo(0, 0)
-  }, [])
 
 export default function App() {
+    const location = useLocation()
+
+  useEffect(() => {
+    window.scrollTo(0, 0)
+  }, [location.pathname])
+
   return (
     <Router>
-      <ScrollToTop/>  
+      
       <AuthProvider>
         <div className="app min-h-screen  bg-[#f8f1e5]  relative overflow-hidden">
            {/* DECORATIVE BACKGROUND ELEMENTS */}
