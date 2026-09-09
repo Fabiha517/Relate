@@ -41,10 +41,7 @@
   if (!response.ok) {
     const errorText = await response.text()
 
-    console.error('=== GROQ HTTP ERROR ===')
-    console.error('status:', response.status)
-    console.error('statusText:', response.statusText)
-    console.error('body:', errorText)
+   
 
     if (response.status === 429) {
       let retryAfterMs = 15000

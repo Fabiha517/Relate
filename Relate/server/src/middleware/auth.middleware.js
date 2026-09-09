@@ -59,12 +59,10 @@ function requireAuth(req, res, next) {
 function optionalAuth(req, res, next) {
   const token = req.cookies?.token;
 
-  console.log('=== OPTIONAL AUTH ===');
-  console.log('token exists:', !!token);
-  console.log('token:', token ? 'PRESENT' : 'MISSING');
+  c
 
   if (!token) {
-    console.log('→ Continuing as GUEST');
+   
     return next();
   }
 

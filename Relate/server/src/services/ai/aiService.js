@@ -79,13 +79,7 @@
   console.error(
     `=== AI ATTEMPT ${attempt}/${maxAttempts} FAILED ===`
   )
-  console.error('name:', err?.name)
-  console.error('message:', err?.message)
-  console.error('code:', err?.code)
-  console.error('status:', err?.status)
-  console.error('retryAfterMs:', err?.retryAfterMs)
-  console.error('stack:', err?.stack)
-      
+  
         /*
         * IMPORTANT:
         * A daily token quota cannot be fixed by retrying.
@@ -192,12 +186,7 @@
     }
 
     const prompt = promptModule.build(request);
-    console.log('=== GENERATION PROMPT MODULE ===')
-  console.log(promptModule)
-  console.log('=== GENERATION PROMPT START ===')
-  console.log(prompt.slice(0, 1000))
-  console.log('=== GENERATION PROMPT END ===')
-
+   
     return callWithRetry({
       prompt,
       timeoutMs: config.aiAnalogyTimeoutMs,

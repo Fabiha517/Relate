@@ -71,10 +71,7 @@ export default function ModificationControls({
     if (!selectedWorld || modifying) return
 
     try {
-      console.log('=== SWITCH WORLD CLICKED ===')
-      console.log('Previous world:', analogy?.analogyWorld)
-      console.log('New world:', selectedWorld)
-
+      
       // IMPORTANT:
       // Switch World is a completely separate operation from Regenerate.
       await onModify('switchWorld', {
@@ -97,9 +94,7 @@ export default function ModificationControls({
   const handleWorldChange = (event) => {
     const world = event.target.value
 
-    console.log('=== WORLD SELECTED ===')
-    console.log('Selected world:', world)
-
+   
     setSelectedWorld(world)
   }
 

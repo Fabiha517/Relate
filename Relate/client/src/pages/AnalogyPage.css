@@ -22,11 +22,11 @@
 
 /* ── ROOT & RESET ───────────────────────────────────────── */
 .ap-root {
-  position: relative;
+   position: relative;
   min-height: 100vh;
   background: var(--ap-bg);
   color: var(--ap-ink);
-  overflow-x: hidden;
+  overflow-x: clip;
   font-family: inherit;
 }
 

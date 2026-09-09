@@ -428,9 +428,7 @@ async function handlePracticeAgain() {
       analogy.id
     )
 
-    console.log(
-      'Practice session saved successfully'
-    )
+   
   } catch (err) {
     console.error(
       'Failed to save practice session:',
