@@ -1,18 +1,29 @@
 import { useState, useCallback } from 'react'
+
 import * as analogyApi from '../api/analogy.api'
 import * as guestSession from '../utils/guestSession'
 
-/**
- * useAnalogy - Hook for managing analogy generation, modification, and saving
- * 
- * State:
- * - analogy: current analogy object (null if not generated)
- * - loading: boolean indicating if a request is in progress
- * - modifying: boolean indicating if a modification is in progress
- * - error: current error state object with code and message
- * 
- * Requirements: 2.3, 2.10, 6.7, 6.8
- */
+function sleep(ms) {
+  return new Promise((resolve) => setTimeout(resolve, ms))
+}
+
+function normalizeError(err, fallbackMessage) {
+  const status = err?.response?.status
+  const errorCode = err?.response?.data?.error?.code
+
+  const errorMessage =
+    err?.response?.data?.error?.message ||
+    err?.message ||
+    fallbackMessage
+
+  return {
+    code: errorCode || 'REQUEST_FAILED',
+    message: errorMessage,
+    status,
+    dismissible: true,
+  }
+}
+
 export function useAnalogy() {
   const [analogy, setAnalogy] = useState(null)
   const [loading, setLoading] = useState(false)
@@ -20,44 +31,70 @@ export function useAnalogy() {
   const [error, setError] = useState(null)
 
   /**
-   * Generate a new analogy
-   * Handles error codes:
-   * - MEANINGFULNESS_REJECTED (400): display on concept field
-   * - AI_FAILURE (503): dismissible banner
-   * - GUEST_LIMIT_REACHED (403): inline message with login/register links
+   * Generate a new analogy.
+   *
+   * Temporary AI failures are retried automatically.
+   * A failed attempt never consumes the guest analogy.
    */
   const generate = useCallback(async (concept, analogyWorld) => {
-
-
     setLoading(true)
     setError(null)
 
+    const maxAttempts = 3
+
     try {
+      let lastError = null
 
+      for (let attempt = 1; attempt <= maxAttempts; attempt += 1) {
+        try {
+          const response = await analogyApi.generateAnalogy({
+            concept,
+            analogyWorld,
+          })
 
-      const response = await analogyApi.generateAnalogy({ concept, analogyWorld })
+          const generatedAnalogy =
+            response?.analogy || response
 
-      const generatedAnalogy = response.analogy || response
+          const completeAnalogy = {
+            ...generatedAnalogy,
+            concept,
+            analogyWorld,
+          }
 
-      // Preserve the original user inputs because the AI response
-      // may not include them.
-      const completeAnalogy = {
-        ...generatedAnalogy,
-        concept,
-        analogyWorld,
+          setAnalogy(completeAnalogy)
+          guestSession.set(completeAnalogy)
+
+          return completeAnalogy
+        } catch (err) {
+          lastError = err
+
+          const status = err?.response?.status
+          const errorCode =
+            err?.response?.data?.error?.code
+
+          const retryable =
+            status === 503 ||
+            errorCode === 'AI_FAILURE' ||
+            !status
+
+          if (!retryable || attempt === maxAttempts) {
+            throw err
+          }
+
+          // Small delay between attempts.
+          await sleep(700 * attempt)
+        }
       }
 
-      setAnalogy(completeAnalogy)
-
-      // Store complete analogy in guest session
-      guestSession.set(completeAnalogy)
-
-      return completeAnalogy
+      throw lastError
     } catch (err) {
+      const status = err?.response?.status
+      const errorCode =
+        err?.response?.data?.error?.code
 
-      const status = err.response?.status
-      const errorCode = err.response?.data?.error?.code
-      const errorMessage = err.response?.data?.error?.message || err.message
+      const errorMessage =
+        err?.response?.data?.error?.message ||
+        err?.message
 
       let errorObj = {
         code: errorCode,
@@ -65,29 +102,43 @@ export function useAnalogy() {
         status,
       }
 
-      // Handle specific error codes
-      if (errorCode === 'MEANINGFULNESS_REJECTED' || status === 400) {
+      if (
+        errorCode === 'MEANINGFULNESS_REJECTED' ||
+        status === 400
+      ) {
         errorObj = {
           code: 'MEANINGFULNESS_REJECTED',
-          message: errorMessage || 'Please provide a meaningful concept, question, explanation, or topic.',
+          message:
+            errorMessage ||
+            'Please provide a meaningful concept, question, explanation, or topic.',
           status: 400,
-          field: 'concept', // Error should display on concept field
+          field: 'concept',
         }
-      } else if (errorCode === 'AI_FAILURE' || status === 503) {
-        errorObj = {
-          code: 'AI_FAILURE',
-          message: errorMessage || 'Failed to generate analogy. Please try again.',
-          status: 503,
-          dismissible: true,
-        }
-      } else if (errorCode === 'GUEST_LIMIT_REACHED' || status === 403) {
+      } else if (
+        errorCode === 'GUEST_LIMIT_REACHED' ||
+        status === 403
+      ) {
         errorObj = {
           code: 'GUEST_LIMIT_REACHED',
-          message: errorMessage || 'You have used your free analogy. Create an account to generate more.',
+          message:
+            errorMessage ||
+            'You have used your free analogy. Create an account to generate more.',
           status: 403,
           inline: true,
           showAuthLinks: true,
         }
+      } else if (
+        errorCode === 'AI_FAILURE' ||
+        status === 503
+      ) {
+        errorObj = {
+          code: 'AI_FAILURE',
+          message:
+            errorMessage ||
+            'Failed to generate analogy. Please try again.',
+          status: 503,
+          dismissible: true,
+        }
       }
 
       setError(errorObj)
@@ -98,137 +149,200 @@ export function useAnalogy() {
   }, [])
 
   /**
-   * Modify an existing analogy (simplify, expand, regenerate, or switch world)
+   * Modify the currently displayed analogy.
+   *
+   * If analogyId exists:
+   *   use the saved analogy endpoint.
+   *
+   * If analogyId does not exist:
+   *   send the current analogy JSON directly.
+   *
+   * This allows Simplify / More Detail / Regenerate /
+   * Switch World to work before the analogy is saved.
    */
-  const modify = useCallback(async (analogyId, modificationType, params = {}) => {
-    setModifying(true)
-    setError(null)
+  const modify = useCallback(
+    async (
+      analogyId,
+      modificationType,
+      params = {}
+    ) => {
+      setModifying(true)
+      setError(null)
 
-    try {
-      const modifyParams = {
-        modificationType,
-        currentNodeCount: analogy?.nodes?.length || 0,
-        ...params,
+      try {
+        const currentAnalogy =
+          params.currentAnalogy || analogy
+
+        if (!currentAnalogy) {
+          throw new Error(
+            'There is no analogy available to modify.'
+          )
+        }
+
+        const modifyParams = {
+          modificationType,
+          currentNodeCount:
+            currentAnalogy?.nodes?.length || 0,
+          currentAnalogy,
+          ...params,
+        }
+
+        delete modifyParams.currentAnalogy
+
+        let response
+
+        if (analogyId) {
+          response =
+            await analogyApi.modifyAnalogy(
+              analogyId,
+              modifyParams
+            )
+        } else {
+          response =
+            await analogyApi.modifyUnsavedAnalogy({
+              modificationType,
+              currentAnalogy,
+              currentNodeCount:
+                currentAnalogy?.nodes?.length || 0,
+              ...params,
+            })
+        }
+
+        const updatedAnalogy =
+          response?.analogy || response
+
+        const completeAnalogy = {
+          ...updatedAnalogy,
+
+          concept:
+            updatedAnalogy?.concept ||
+            currentAnalogy?.concept ||
+            '',
+
+          analogyWorld:
+            updatedAnalogy?.analogyWorld ||
+            params?.analogyWorld ||
+            currentAnalogy?.analogyWorld ||
+            '',
+        }
+
+        setAnalogy(completeAnalogy)
+
+        guestSession.set(completeAnalogy)
+
+        return completeAnalogy
+      } catch (err) {
+        const errorObj = normalizeError(
+          err,
+          'Failed to modify analogy. Please try again.'
+        )
+
+        setError(errorObj)
+
+        throw errorObj
+      } finally {
+        setModifying(false)
       }
+    },
+    [analogy]
+  )
 
-      const response = await analogyApi.modifyAnalogy(analogyId, modifyParams)
-      const updatedAnalogy = response.analogy || response
+  const save = useCallback(
+    async (analogyData) => {
+      setLoading(true)
+      setError(null)
 
-      const completeAnalogy = {
-        ...updatedAnalogy,
-        concept: updatedAnalogy.concept || analogy?.concept || '',
-        analogyWorld: updatedAnalogy.analogyWorld || analogy?.analogyWorld || '',
+      try {
+        const response =
+          await analogyApi.saveAnalogy(analogyData)
+
+        const savedAnalogy =
+          response?.analogy || response
+
+        setAnalogy({
+          ...analogy,
+          ...savedAnalogy,
+          id: savedAnalogy.id,
+          createdAt: savedAnalogy.createdAt,
+        })
+
+        guestSession.clear()
+
+        return savedAnalogy
+      } catch (err) {
+        const errorObj = {
+          ...normalizeError(
+            err,
+            'Failed to save analogy. Please try again.'
+          ),
+          code:
+            err?.response?.data?.error?.code ||
+            'SAVE_FAILED',
+          fields:
+            err?.response?.data?.error?.fields,
+          showRetry: true,
+        }
+
+        console.error(
+          'Save API error:',
+          err?.response?.data
+        )
+
+        setError(errorObj)
+
+        throw errorObj
+      } finally {
+        setLoading(false)
       }
+    },
+    [analogy]
+  )
 
-      setAnalogy(completeAnalogy)
-      guestSession.set(completeAnalogy)
+  const update = useCallback(
+    async (analogyId, analogyData) => {
+      setLoading(true)
+      setError(null)
 
-      return completeAnalogy
-    } catch (err) {
-      const status = err.response?.status
-      const errorCode = err.response?.data?.error?.code
-      const errorMessage = err.response?.data?.error?.message || err.message
+      try {
+        const response =
+          await analogyApi.updateAnalogy(
+            analogyId,
+            analogyData
+          )
 
-      const errorObj = {
-        code: errorCode || 'MODIFICATION_FAILED',
-        message: errorMessage || 'Failed to modify analogy. Please try again.',
-        status,
-        dismissible: true,
+        const updatedAnalogy =
+          response?.analogy || response
+
+        setAnalogy((prev) => ({
+          ...prev,
+          ...updatedAnalogy,
+        }))
+
+        return updatedAnalogy
+      } catch (err) {
+        const errorObj = {
+          ...normalizeError(
+            err,
+            'Failed to update analogy. Please try again.'
+          ),
+          code:
+            err?.response?.data?.error?.code ||
+            'UPDATE_FAILED',
+          fields:
+            err?.response?.data?.error?.fields,
+          showRetry: true,
+        }
+
+        setError(errorObj)
+
+        throw errorObj
+      } finally {
+        setLoading(false)
       }
+    },
+    []
+  )
 
-      setError(errorObj)
-      throw errorObj
-    } finally {
-      setModifying(false)
-    }
-  }, [analogy])
-
-  /**
-   * Save an analogy to the authenticated user's library
-   */
-  const save = useCallback(async (analogyData) => {
-    setLoading(true)
-    setError(null)
-
-    try {
-      const response = await analogyApi.saveAnalogy(analogyData)
-      const savedAnalogy = response.analogy || response
-
-      setAnalogy({
-        ...analogy,
-        ...savedAnalogy,
-        id: savedAnalogy.id,
-        createdAt: savedAnalogy.createdAt,
-      })
-
-      // Clear guest session after successful save
-      guestSession.clear()
-
-      return savedAnalogy
-    }
-    catch (err) {
-      const status = err.response?.status
-      const errorCode = err.response?.data?.error?.code
-      const errorMessage =
-        err.response?.data?.error?.message || err.message
-
-      const errorFields = err.response?.data?.error?.fields
-
-      const errorObj = {
-        code: errorCode || 'SAVE_FAILED',
-        message: errorMessage || 'Failed to save analogy. Please try again.',
-        status,
-        fields: errorFields,
-        dismissible: true,
-        showRetry: true,
-      }
-
-      console.error('Save API error:', err.response?.data)
-
-      setError(errorObj)
-      throw errorObj
-    } finally {
-      setLoading(false)
-    }
-  }, [analogy])
-
-  /**
-   * Update an existing saved analogy (for modified versions)
-   */
-  const update = useCallback(async (analogyId, analogyData) => {
-    setLoading(true)
-    setError(null)
-
-    try {
-      const response = await analogyApi.updateAnalogy(analogyId, analogyData)
-      const updatedAnalogy = response.analogy || response
-
-      setAnalogy(updatedAnalogy)
-
-      return updatedAnalogy
-    } catch (err) {
-      const status = err.response?.status
-      const errorCode = err.response?.data?.error?.code
-      const errorMessage = err.response?.data?.error?.message || err.message
-
-      const errorObj = {
-        code: errorCode || 'UPDATE_FAILED',
-        message: errorMessage || 'Failed to update analogy. Please try again.',
-        status,
-        dismissible: true,
-        showRetry: true,
-      }
-
-      setError(errorObj)
-      throw errorObj
-    } finally {
-      setLoading(false)
-    }
-  }, [])
-
-  /**
-   * Clear error state
-   */
   const clearError = useCallback(() => {
     setError(null)
   }, [])

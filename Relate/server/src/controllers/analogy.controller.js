@@ -121,13 +121,17 @@ async function generate(req, res) {
   try {
     meaningResult = await meaningfulnessValidator.validate(concept);
   } catch {
-    // Treat validator failure as AI failure — do not consume guest slot
-    return res.status(503).json({
-      error: {
-        code: 'AI_FAILURE',
-        message: 'Analogy generation failed. Please try again.'
-      }
-    });
+    console.error(
+    '[analogy.controller] meaningfulness validation failed:',
+    err.message
+  );
+
+  return res.status(503).json({
+    error: {
+      code: 'AI_FAILURE',
+      message: 'Analogy generation failed. Please try again.'
+    }
+  });
   }
 
   if (!meaningResult.valid) {
@@ -191,6 +195,9 @@ async function generate(req, res) {
   // ── Step 6: Authenticated — return directly ───────────────────────────────
   return res.status(200).json({ analogy });
 }
+
+
+
 
 // ─── POST /api/analogies ─────────────────────────────────────────────────────
 
@@ -379,39 +386,80 @@ async function modify(req, res) {
     case 'switchWorld':
       aiRequest = {
         concept: doc.concept,
-        analogyWorld: newWorld,                  // new world from request body
+        analogyWorld: newWorld,
         modificationType: 'switchWorld',
-        previousAnalogyWorld: doc.analogyWorld,   // always from stored document
+        previousAnalogyWorld: doc.analogyWorld,
         currentAnalogyJson: JSON.stringify(doc.toObject())
       };
       break;
 
     default:
       return res.status(400).json({
-        error: { code: 'VALIDATION_ERROR', message: 'Invalid modificationType.' }
+        error: {
+          code: 'VALIDATION_ERROR',
+          message: 'Invalid modificationType.'
+        }
       });
   }
 
-let result;
+  let result;
 
-try {
+  try {
+    result = await aiService.generate(aiRequest);
+  } catch (err) {
+    console.error(
+      `[analogy.controller] ${modificationType} failed:`,
+      err.message
+    );
 
+    return res.status(503).json({
+      error: {
+        code: 'AI_FAILURE',
+        message: 'Analogy generation failed. Please try again.'
+      }
+    });
+  }
 
-  result = await aiService.generate(aiRequest);
+  // ── Persist the modified analogy ──────────────────────────────────────────
+  doc.analogyTitle = result.analogyTitle;
+  doc.nodes = result.nodes;
+  doc.mappings = result.mappings;
+  doc.relationships = result.relationships;
+  doc.explanation = result.explanation;
+  doc.limitations = result.limitations;
 
+  if (result.concept) {
+    doc.concept = result.concept;
+  }
 
-} catch (err) {
+  if (result.analogyWorld) {
+    doc.analogyWorld = result.analogyWorld;
+  }
 
+  doc.updatedAt = new Date();
 
-  return res.status(503).json({
-    error: {
-      code: 'AI_FAILURE',
-      message: 'Analogy generation failed. Please try again.'
-    }
+  await doc.save();
+
+  // ── Validate what was actually stored ─────────────────────────────────────
+  try {
+    roundTripValidate(doc.toObject());
+  } catch (err) {
+    console.error(
+      '[analogy.controller] modify round-trip validation error:',
+      err.message
+    );
+
+    return res.status(500).json({
+      error: {
+        code: 'INTERNAL_ERROR',
+        message: 'Modified analogy data validation failed after storage.'
+      }
+    });
+  }
+
+  return res.status(200).json({
+    analogy: doc.toObject()
   });
-}
-
-  return res.status(200).json({ analogy: result });
 }
 
 module.exports = { 

@@ -3,7 +3,7 @@ import { AuthProvider } from './context/AuthContext'
 import { Navbar } from './components/layout/Navbar'
 import { ProtectedRoute } from './components/layout/ProtectedRoute'
 import { GuestRoute } from './components/layout/GuestRoute'
-
+import ScrollToTop from './components/layout/ScrollToTop'
 // Pages
 import HomePage from './pages/HomePage'
 import AnalogyPage from './pages/AnalogyPage'
@@ -43,6 +43,7 @@ import ProfilePage from './pages/ProfilePage'
 export default function App() {
   return (
     <Router>
+      <ScrollToTop/>  
       <AuthProvider>
         <div className="app min-h-screen  bg-[#f8f1e5]  relative overflow-hidden">
            {/* DECORATIVE BACKGROUND ELEMENTS */}

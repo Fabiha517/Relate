@@ -403,102 +403,84 @@ export default function AnalogyPage() {
   // MODIFY ANALOGY
   // =========================================================
 
-  async function handleModify(
-    modificationType,
-    params
-  ) {
+async function handleModify(
+  modificationType,
+  params = {}
+) {
+  const savedAnalogyId =
+    savedData?.id ||
+    savedData?._id ||
+    analogyData?.id ||
+    analogyData?._id ||
+    null
 
-    const savedAnalogyId =
-      savedData?.id ||
-      savedData?._id
+  setModifyError(null)
 
-
-    if (!savedAnalogyId) {
-
-      console.error(
-        'Cannot modify analogy: no saved analogy ID found'
+  try {
+    const modifiedAnalogy =
+      await modify(
+        savedAnalogyId,
+        modificationType,
+        {
+          ...params,
+          currentAnalogy: analogyData,
+        }
       )
 
-      return
+    const completeModifiedAnalogy = {
+      ...modifiedAnalogy,
 
+      concept:
+        modifiedAnalogy?.concept ||
+        analogyData?.concept ||
+        '',
+
+      analogyWorld:
+        modificationType === 'switchWorld'
+          ? params?.analogyWorld
+          : modifiedAnalogy?.analogyWorld ||
+            analogyData?.analogyWorld ||
+            '',
     }
 
+    setAnalogyData(
+      completeModifiedAnalogy
+    )
 
-    setModifyError(null)
-
-
-    try {
-
-      const modifiedAnalogy =
-        await modify(
-          savedAnalogyId,
-          modificationType,
-          params
-        )
-
-
-      const completeModifiedAnalogy = {
-
-        ...modifiedAnalogy,
-
-        concept:
-          modifiedAnalogy.concept ||
-          analogyData.concept ||
-          savedData.concept ||
-          '',
-
-        analogyWorld:
-
-          modificationType ===
-          'switchWorld'
-
-            ? params?.analogyWorld
-
-            : modifiedAnalogy.analogyWorld ||
-              analogyData.analogyWorld ||
-              savedData.analogyWorld ||
-              '',
-
-      }
-
-
-      setAnalogyData(
-        completeModifiedAnalogy
-      )
-
-
-      setSavedData(prev => ({
-
+    /*
+     * IMPORTANT:
+     * Keep the original saved ID if this was
+     * already a saved analogy.
+     *
+     * Do NOT replace savedData with only
+     * the modified AI response because the
+     * response does not necessarily contain
+     * the complete database document.
+     */
+    if (savedAnalogyId) {
+      setSavedData((prev) => ({
         ...prev,
-
         ...completeModifiedAnalogy,
-
         id:
           prev?.id ||
           prev?._id ||
           savedAnalogyId,
-
         _id:
           prev?._id ||
           savedAnalogyId,
-
       }))
-
-
-      setIsModified(true)
-
-    } catch (err) {
-
-      console.error(
-        'Modification error:',
-        err
-      )
-
-      setModifyError(err)
-
     }
 
+    setIsModified(true)
+  } catch (err) {
+    console.error(
+      'Modification error:',
+      err
+    )
+
+    setModifyError(err)
   }
+}
 
 
 
