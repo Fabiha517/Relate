@@ -40,6 +40,10 @@ import ProfilePage from './pages/ProfilePage'
  *
  * Requirements: 9.1, 10.5
  */
+ useEffect(() => {
+    window.scrollTo(0, 0)
+  }, [])
+
 export default function App() {
   return (
     <Router>
