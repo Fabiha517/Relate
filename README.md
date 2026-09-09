@@ -1,5 +1,4 @@
-````markdown
- Relate
+# Relate
 
 Relate is an AI-powered learning application designed to make difficult and abstract concepts easier to understand.
 
@@ -11,9 +10,9 @@ The goal is simple:
 
 ---
 
-✨ Features
+## ✨ Features
 
- 🧠 AI-Powered Analogies
+### 🧠 AI-Powered Analogies
 
 Enter any concept you want to understand and choose an analogy world.
 
@@ -31,7 +30,7 @@ The analogy is designed to explain the real concept, rather than simply replacin
 
 ---
 
- 🌎 Analogy Worlds
+### 🌎 Analogy Worlds
 
 Users can understand a concept through different familiar worlds.
 
@@ -46,16 +45,17 @@ Different worlds provide different ways of visualizing the same underlying conce
 
 For example, an API can be explained using a restaurant:
 
+```text
 Customer  →  Application
 Waiter    →  API
 Kitchen   →  Server
 Order     →  Request
 Meal      →  Response
-
+```
 
 ---
 
- 🗺️ Visual Concept Models
+### 🗺️ Visual Concept Models
 
 Relate converts the generated analogy into a visual model.
 
@@ -63,29 +63,29 @@ The model shows how important parts of the real concept correspond to elements o
 
 It can represent different types of behavior, including:
 
-* Sequential processes
-* Branching
-* Communication
-* Repetition
-* Recursion
-* Feedback
-* Returning results
+- Sequential processes
+- Branching
+- Communication
+- Repetition
+- Recursion
+- Feedback
+- Returning results
 
 The visual model is intended to help users understand relationships at a glance.
 
 ---
 
- 📚 Beginner-First Learning
+### 📚 Beginner-First Learning
 
 Relate is designed for users who may have little or no prior knowledge of a topic.
 
 Explanations prioritize:
 
-* Simple language
-* Short sentences
-* Familiar examples
-* Clear processes
-* Gradual introduction of terminology
+- Simple language
+- Short sentences
+- Familiar examples
+- Clear processes
+- Gradual introduction of terminology
 
 Technical terms are not removed when they are important. Instead, unfamiliar terms can be explained briefly when first introduced.
 
@@ -97,27 +97,28 @@ This allows Relate to remain technically accurate while still being approachable
 
 ---
 
- 📝 Practice
+### 📝 Practice
 
 Relate also provides practice sessions to help users test their understanding after learning a concept.
 
 Users can:
 
-* Generate practice questions
-* Answer questions
-* Receive AI-based evaluation
-* Review previous sessions
-* Generate additional questions
-* Track their practice history
+- Generate practice questions
+- Answer questions
+- Receive AI-based evaluation
+- Review previous sessions
+- Generate additional questions
+- Track their practice history
 
 The purpose of practice is to move from simply reading an explanation to actively demonstrating understanding.
 
 ---
 
- 🎯 How Relate Works
+## 🎯 How Relate Works
 
 The learning experience follows a simple progression:
 
+```text
 Choose a Concept
        ↓
 Choose an Analogy World
@@ -133,14 +134,13 @@ Connect the Analogy to the Concept
 Explore the Visual Model
        ↓
 Practice
-
-
+```
 
 The learner should eventually understand the real concept without needing the analogy.
 
 ---
 
- 💡 Example
+## 💡 Example
 
 Suppose the user asks:
 
@@ -166,7 +166,7 @@ Finally, precise instructions are created that the kitchen can follow.
 
 This can then be connected back to the compiler:
 
-
+```text
 Customer's order
         ↓
 Source code
@@ -190,6 +190,7 @@ Machine code
 Kitchen executing the instructions
         ↓
 CPU executing the program
+```
 
 The purpose is not to make the learner memorize the restaurant.
 
@@ -197,8 +198,7 @@ It is to make the compiler's process easier to visualize.
 
 ---
 
-
- 📁 Project Structure
+## 📁 Project Structure
 
 ```text
 Relate/
@@ -230,20 +230,18 @@ Relate/
 
 ---
 
-
-
-🔐 Authentication
+## 🔐 Authentication
 
 Relate includes user authentication and account functionality.
 
 Users can:
 
-* Create an account
-* Log in
-* Log out
-* Access protected pages
-* Manage their profile
-* Reset their password
+- Create an account
+- Log in
+- Log out
+- Access protected pages
+- Manage their profile
+- Reset their password
 
 Password reset emails are sent through AgentMail.
 
@@ -251,16 +249,23 @@ Sensitive credentials such as JWT secrets, database credentials, AI API keys, an
 
 ---
 
- 🎨 Design Philosophy
+## 🎨 Design Philosophy
 
 Relate is intentionally designed to feel different from a traditional educational dashboard.
 
 The interface combines a visual learning canvas with a playful but refined visual language.
 
+The design focuses on:
+
+- Visual storytelling
+- Clear relationships between ideas
+- Warm, expressive visuals
+- Playful but professional interactions
+- A learning experience that feels exploratory rather than dashboard-driven
 
 ---
 
- 🧩 AI Generation Philosophy
+## 🧩 AI Generation Philosophy
 
 Relate follows a **teaching-first, analogy-second** approach.
 
@@ -288,5 +293,34 @@ Important stages, behaviors, relationships, recursion, branching, communication,
 
 At the same time, unnecessary technical jargon and irrelevant detail should be avoided.
 
+### Simple Analogy Language
 
----
+The analogy world should use simple, familiar language whenever possible.
+
+Technical terminology should not be forced into the analogy just because the real concept uses technical terms.
+
+When a technical term is necessary, Relate can introduce it with a short beginner-friendly meaning.
+
+For example:
+
+> **Optimization** (making the program more efficient)
+
+This keeps the explanation technically accurate without making the analogy difficult to follow.
+
+### The Learning Goal
+
+The analogy is a bridge, not the destination.
+
+Relate should help the learner move from:
+
+```text
+Familiar world
+      ↓
+Understanding the mechanism
+      ↓
+Understanding the real concept
+      ↓
+Understanding the concept without the analogy
+```
+
+The final goal is genuine understanding rather than memorization of the analogy.
