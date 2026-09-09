@@ -35,7 +35,7 @@ function AppContent() {
 
   return (
     <AuthProvider>
-      <div className="app min-h-screen bg-[#f8f1e5] relative overflow-hidden">
+      <div className="app min-h-screen bg-[#f8f1e5] relative">
 
         {/* DECORATIVE BACKGROUND ELEMENTS */}
 
