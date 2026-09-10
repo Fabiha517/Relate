@@ -120,7 +120,7 @@ async function generate(req, res) {
   let meaningResult;
   try {
     meaningResult = await meaningfulnessValidator.validate(concept);
-  } catch {
+  } catch(err) {
     console.error(
     '[analogy.controller] meaningfulness validation failed:',
     err.message
@@ -166,31 +166,61 @@ async function generate(req, res) {
   }
 
   // ── Step 5: Guest enforcement (unauthenticated only) ──────────────────────
-  if (!req.user) {
+if (!req.user) {
+  try {
     const guestId = req.cookies?.guestId;
 
-    // Check current consumption state
-    const existing = await GuestUsage.findOne({ guestId });
-
-    if (existing && existing.consumed) {
-      // Already used — discard the generated analogy, do NOT return it
-      return res.status(403).json({
+    if (!guestId) {
+      return res.status(400).json({
         error: {
-          code: 'GUEST_LIMIT_REACHED',
-          message: 'You have used your free analogy. Create an account to generate more.'
+          code: 'GUEST_SESSION_ERROR',
+          message: 'Guest session could not be identified.'
         }
       });
     }
 
-    // Atomically mark as consumed and store the analogy data
+    const existing = await GuestUsage.findOne({ guestId });
+
+    if (existing && existing.consumed) {
+      return res.status(403).json({
+        error: {
+          code: 'GUEST_LIMIT_REACHED',
+          message:
+            'You have used your free analogy. Create an account to generate more.'
+        }
+      });
+    }
+
     await GuestUsage.findOneAndUpdate(
       { guestId },
-      { $set: { consumed: true, analogyData: analogy } },
-      { upsert: true, new: true }
+      {
+        $set: {
+          consumed: true,
+          analogyData: analogy
+        }
+      },
+      {
+        upsert: true,
+        new: true
+      }
     );
 
     return res.status(200).json({ analogy });
+
+  } catch (err) {
+    console.error(
+      '[analogy.controller] guest usage error:',
+      err
+    );
+
+    return res.status(500).json({
+      error: {
+        code: 'INTERNAL_ERROR',
+        message: 'Unable to complete analogy generation.'
+      }
+    });
   }
+}
 
   // ── Step 6: Authenticated — return directly ───────────────────────────────
   return res.status(200).json({ analogy });

@@ -59,7 +59,7 @@ function requireAuth(req, res, next) {
 function optionalAuth(req, res, next) {
   const token = req.cookies?.token;
 
-  c
+  
 
   if (!token) {
    
@@ -74,8 +74,7 @@ function optionalAuth(req, res, next) {
       email: decoded.email
     };
 
-    console.log('→ AUTHENTICATED');
-    console.log('req.user:', req.user);
+  
   } catch (err) {
     console.log('→ TOKEN INVALID:', err.message);
   }
